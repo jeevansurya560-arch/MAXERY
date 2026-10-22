@@ -1,0 +1,33 @@
+name: Security & Secret Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    name: Secret & Credential Exposure Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify No Secrets Committed
+        run: |
+          echo "Scanning git index for sensitive environment files..."
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "SECURITY BREACH: .env file is committed in Git repository!"
+            exit 1
+          fi
+          if git ls-files --error-unmatch apps/api/.env 2>/dev/null; then
+            echo "SECURITY BREACH: apps/api/.env is committed in Git repository!"
+            exit 1
+          fi
+          if git ls-files --error-unmatch apps/web/.env 2>/dev/null; then
+            echo "SECURITY BREACH: apps/web/.env is committed in Git repository!"
+            exit 1
+          fi
+          echo "SUCCESS: No private environment secrets committed."

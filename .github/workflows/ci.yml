@@ -1,0 +1,44 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Structure, Rules & Documentation Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Environment Check
+        run: node scripts/check-environment.js
+
+      - name: Enforce Pure JavaScript & JSX Rule (Zero TypeScript)
+        run: |
+          TS_FILES=$(find . -not -path "*/node_modules/*" -not -path "*/.git/*" \( -name "*.ts" -o -name "*.tsx" \) || true)
+          if [ -n "$TS_FILES" ]; then
+            echo "CRITICAL: TypeScript files detected. MAXERY strictly mandates JavaScript and JSX only:"
+            echo "$TS_FILES"
+            exit 1
+          fi
+          echo "SUCCESS: Zero TypeScript files detected across repository."
+
+      - name: Verify Documentation Completeness (33 Specifications)
+        run: |
+          DOCS_COUNT=$(ls docs/*.md 2>/dev/null | wc -l)
+          echo "Found $DOCS_COUNT documentation files in docs/."
+          if [ "$DOCS_COUNT" -lt 33 ]; then
+            echo "ERROR: Expected 33 master documentation specifications, found only $DOCS_COUNT."
+            exit 1
+          fi
+          echo "SUCCESS: All 33 Phase 0 specifications verified."

@@ -1,11 +1,11 @@
 # MAXERY — Secure Emergency Identification & Trusted-Contact Coordination Platform
 
-[![CI Pipeline](https://github.com/maxery/maxery/actions/workflows/ci.yml/badge.svg)](https://github.com/maxery/maxery/actions/workflows/ci.yml)
+[![CI Pipeline](https://github.com/jeevansurya560-arch/MAXERY/actions/workflows/ci.yml/badge.svg)](https://github.com/jeevansurya560-arch/MAXERY/actions/workflows/ci.yml)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Database](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
 [![Fastify](https://img.shields.io/badge/Fastify-v5-black.svg)](https://fastify.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
-[![License](https://img.shields.io/badge/License-Proprietary-red.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **LIFE-SAFETY DISCLAIMER:**  
 > MAXERY is an emergency identification and contact coordination platform. It does not provide medical advice, diagnosis, or clinical triage, and does **NOT** replace emergency medical services, paramedic care, or hospital transport. In any acute medical emergency, immediately contact national emergency services (e.g., dial **112** in India).
