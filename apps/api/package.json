@@ -1,0 +1,28 @@
+{
+  "name": "@maxery/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "@fastify/helmet": "^13.0.1",
+    "@fastify/jwt": "^9.0.4",
+    "@fastify/rate-limit": "^10.2.2",
+    "@maxery/shared": "*",
+    "@prisma/client": "^6.4.1",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "socket.io": "^4.8.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.6"
+  }
+}

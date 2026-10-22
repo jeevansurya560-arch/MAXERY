@@ -1,0 +1,49 @@
+name: maxery-infra
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: maxery-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: maxery_user
+      POSTGRES_PASSWORD: maxery_secure_pass
+      POSTGRES_DB: maxery_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - maxery_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maxery_user -d maxery_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - maxery-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: maxery-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass maxery_redis_pass
+    ports:
+      - "6379:6379"
+    volumes:
+      - maxery_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "maxery_redis_pass", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - maxery-network
+
+volumes:
+  maxery_pgdata:
+    driver: local
+  maxery_redisdata:
+    driver: local
+
+networks:
+  maxery-network:
+    driver: bridge

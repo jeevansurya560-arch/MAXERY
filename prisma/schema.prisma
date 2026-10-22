@@ -1,0 +1,426 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  RESPONDER
+  ADMIN
+  PATIENT
+  DISPATCHER
+}
+
+enum OrganisationType {
+  HOSPITAL
+  AMBULANCE_SERVICE
+  LAW_ENFORCEMENT
+  FIRE_RESCUE
+  EMERGENCY_SERVICES
+}
+
+enum IdentifierType {
+  QR_CODE
+  PHONE_MEDICAL_ID
+  WRISTBAND
+  OTHER_DEVICE
+}
+
+enum IdentifierStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+  SUSPENDED
+}
+
+enum MedicalInfoSource {
+  SELF_REPORTED
+  FAMILY_REPORTED
+  PHYSICIAN_DOCUMENTED
+  DEVICE_MEDICAL_ID
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING_REVIEW
+  VERIFIED
+  DISPUTED
+}
+
+enum ContactPriority {
+  PRIMARY
+  SECONDARY
+  TERTIARY
+}
+
+enum ContactOutcome {
+  CONNECTED_AWARE
+  NO_ANSWER
+  VOICEMAIL_LEFT
+  WRONG_NUMBER
+  BUSY
+  CALL_FAILED
+}
+
+enum CaseStatus {
+  OPEN_UNIDENTIFIED
+  INVESTIGATING
+  PROVISIONALLY_IDENTIFIED
+  RESOLVED_IDENTIFIED
+  CLOSED_UNRESOLVED
+}
+
+enum UrgencyLevel {
+  CRITICAL
+  URGENT
+  STABLE
+  UNKNOWN
+}
+
+enum IdentificationStatus {
+  SUCCESS_MATCHED
+  FAILED_INVALID_TOKEN
+  FAILED_REVOKED
+  FAILED_EXPIRED
+  FAILED_UNAUTHORIZED
+}
+
+enum PrivacyRequestType {
+  ACCESS_EXPORT
+  RECTIFICATION
+  ERASURE_FORGOTTEN
+  RESTRICTION
+}
+
+enum PrivacyRequestStatus {
+  PENDING
+  IN_REVIEW
+  COMPLETED
+  REJECTED
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+}
+
+model User {
+  id                      String                   @id @default(uuid())
+  email                   String                   @unique
+  passwordHash            String
+  fullName                String
+  role                    UserRole                 @default(RESPONDER)
+  phone                   String?
+  badgeNumber             String?
+  isActive                Boolean                  @default(true)
+  lastLoginAt             DateTime?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  memberships             OrganisationMembership[]
+  patientProfile          Patient?
+  identificationAttempts  IdentificationAttempt[]
+  unidentifiedCases       UnidentifiedCase[]       @relation("AssignedResponder")
+  caseEvents              CaseEvent[]
+  contactAttempts         ContactAttempt[]
+  auditEvents             AuditEvent[]
+  verifiedMedicalInfos    MedicalInformation[]     @relation("VerifiedByUser")
+  resolvedPrivacyRequests PrivacyRequest[]         @relation("ResolvedByUser")
+
+  @@index([email])
+  @@index([role])
+}
+
+model Organisation {
+  id             String                   @id @default(uuid())
+  name           String
+  code           String                   @unique
+  type           OrganisationType         @default(HOSPITAL)
+  contactEmail   String
+  contactPhone   String?
+  address        String?
+  jurisdiction   String?
+  isVerified     Boolean                  @default(false)
+  isActive       Boolean                  @default(true)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  memberships    OrganisationMembership[]
+  attempts       IdentificationAttempt[]
+  cases          UnidentifiedCase[]
+
+  @@index([code])
+}
+
+model OrganisationMembership {
+  id             String       @id @default(uuid())
+  userId         String
+  organisationId String
+  roleInOrg      String       @default("MEMBER")
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organisationId])
+}
+
+model Patient {
+  id                   String                 @id @default(uuid())
+  userId               String?                @unique
+  publicCode           String                 @unique @default(uuid())
+  dateOfBirth          DateTime?
+  bloodGroup           String?
+  gender               String?
+  primaryLanguage      String?                @default("English")
+  allergiesSummary     String?
+  conditionsSummary    String?
+  medicationsSummary   String?
+  isOrganDonor         Boolean                @default(false)
+  emergencyNotes       String?
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  user                 User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  identifiers          PatientIdentifier[]
+  medicalInformation   MedicalInformation[]
+  emergencyContacts    EmergencyContact[]
+  matchedAttempts      IdentificationAttempt[]
+  resolvedCases        UnidentifiedCase[]
+  consentRecords       ConsentRecord[]
+  privacyRequests      PrivacyRequest[]
+
+  @@index([publicCode])
+}
+
+model PatientIdentifier {
+  id               String           @id @default(uuid())
+  patientId        String
+  identifierType   IdentifierType   @default(QR_CODE)
+  publicToken      String           @unique
+  tokenHash        String?          @unique
+  status           IdentifierStatus @default(ACTIVE)
+  expiresAt        DateTime?
+  revokedAt        DateTime?
+  revocationReason String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  patient          Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([publicToken])
+  @@index([status])
+}
+
+model MedicalInformation {
+  id                 String             @id @default(uuid())
+  patientId          String
+  category           String
+  summary            String
+  details            String?
+  source             MedicalInfoSource  @default(SELF_REPORTED)
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  verifiedByUserId   String?
+  verifiedAt         DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  patient            Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  verifiedByUser     User?              @relation("VerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([verificationStatus])
+}
+
+model EmergencyContact {
+  id              String            @id @default(uuid())
+  patientId       String
+  fullName        String
+  relationship    String
+  primaryPhone    String
+  alternatePhone  String?
+  priority        ContactPriority   @default(PRIMARY)
+  isVerified      Boolean           @default(false)
+  consentStatus   String            @default("OPTED_IN")
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  patient         Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  contactAttempts ContactAttempt[]
+
+  @@index([patientId])
+  @@index([priority])
+}
+
+model IdentificationAttempt {
+  id               String               @id @default(uuid())
+  responderUserId  String
+  organisationId   String?
+  identifierType   IdentifierType       @default(QR_CODE)
+  identifierToken  String
+  matchedPatientId String?
+  status           IdentificationStatus
+  failureReason    String?
+  accessReason     String?
+  latitude         Float?
+  longitude        Float?
+  createdAt        DateTime             @default(now())
+
+  responder        User                 @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
+  organisation     Organisation?        @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  matchedPatient   Patient?             @relation(fields: [matchedPatientId], references: [id], onDelete: SetNull)
+
+  @@index([responderUserId])
+  @@index([matchedPatientId])
+  @@index([identifierToken])
+  @@index([createdAt])
+}
+
+model UnidentifiedCase {
+  id                     String           @id @default(uuid())
+  caseNumber             String           @unique
+  status                 CaseStatus       @default(OPEN_UNIDENTIFIED)
+  urgency                UrgencyLevel     @default(URGENT)
+  responderUserId        String
+  organisationId         String?
+  patientId              String?
+  estimatedAge           String?
+  estimatedGender        String?
+  physicalDescription    String?
+  clothingDescription    String?
+  distinguishingFeatures String?
+  locationFound          String
+  hospitalName           String?
+  notes                  String?
+  resolvedAt             DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  responder              User             @relation("AssignedResponder", fields: [responderUserId], references: [id], onDelete: Restrict)
+  organisation           Organisation?    @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  identifiedPatient      Patient?         @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  events                 CaseEvent[]
+  contactAttempts        ContactAttempt[]
+
+  @@index([caseNumber])
+  @@index([status])
+  @@index([responderUserId])
+}
+
+model CaseEvent {
+  id          String           @id @default(uuid())
+  caseId      String
+  userId      String?
+  eventType   String
+  description String
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+
+  case        UnidentifiedCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([caseId])
+  @@index([createdAt])
+}
+
+model ContactAttempt {
+  id                 String           @id @default(uuid())
+  caseId             String?
+  emergencyContactId String
+  responderUserId    String
+  method             String           @default("PHONE_CALL")
+  outcome            ContactOutcome
+  notes              String?
+  attemptTimestamp   DateTime         @default(now())
+  createdAt          DateTime         @default(now())
+
+  case               UnidentifiedCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  emergencyContact   EmergencyContact @relation(fields: [emergencyContactId], references: [id], onDelete: Cascade)
+  responder          User             @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
+
+  @@index([emergencyContactId])
+  @@index([responderUserId])
+}
+
+model ConsentRecord {
+  id              String   @id @default(uuid())
+  patientId       String
+  consentType     String
+  granted         Boolean  @default(true)
+  purpose         String
+  recordedByUserId String?
+  validUntil      DateTime?
+  ipAddress       String?
+  createdAt       DateTime @default(now())
+
+  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+model AuditEvent {
+  id             String   @id @default(uuid())
+  userId         String?
+  organisationId String?
+  action         String
+  entityType     String
+  entityId       String?
+  ipAddress      String?
+  userAgent      String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model PrivacyRequest {
+  id               String               @id @default(uuid())
+  userId           String?
+  patientId        String?
+  requestType      PrivacyRequestType
+  status           PrivacyRequestStatus @default(PENDING)
+  reason           String
+  resolutionNotes  String?
+  resolvedByUserId String?
+  requestedAt      DateTime             @default(now())
+  resolvedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  patient          Patient?             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  resolvedByUser   User?                @relation("ResolvedByUser", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([status])
+}
+
+model OutboxEvent {
+  id            String       @id @default(uuid())
+  eventType     String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  retryCount    Int          @default(0)
+  nextRetryAt   DateTime     @default(now())
+  error         String?
+  createdAt     DateTime     @default(now())
+  processedAt   DateTime?
+
+  @@index([status, nextRetryAt])
+  @@index([aggregateType, aggregateId])
+}
