@@ -1,122 +1,299 @@
+/**
+ * @maxery/shared — Zod input validation schemas
+ *
+ * These schemas validate user-supplied input at API boundaries.
+ * They are NOT database types; they describe what clients send.
+ * All schemas use .strict() to reject unknown fields (prevents mass-assignment).
+ */
+
 import { z } from 'zod';
+import { SECURITY_LIMITS } from '../constants/index.js';
 import {
-  UserRole,
   MedicalInfoSource,
+  ContactSafetyStatus,
   ContactPriority,
-  ContactOutcome,
-  CaseStatus,
   UrgencyLevel,
+  IdentifierType,
   PrivacyRequestType,
 } from '../enums/index.js';
 
-// Auth Schemas
-export const loginSchema = z.object({
-  email: z.string().trim().email('Invalid email address').max(255),
-  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
-});
+// ---------------------------------------------------------------------------
+// Primitives
+// ---------------------------------------------------------------------------
 
-export const registerSchema = z.object({
-  email: z.string().trim().email('Invalid email address').max(255),
-  password: z.string().min(12, 'Password must be at least 12 characters').max(128),
-  fullName: z.string().trim().min(2, 'Name must be at least 2 characters').max(120),
-  role: z.enum([UserRole.RESPONDER, UserRole.PATIENT, UserRole.DISPATCHER]).default(UserRole.RESPONDER),
-  phone: z.string().trim().min(8).max(20).optional(),
-});
+const phoneE164 = z
+  .string()
+  .regex(/^\+[1-9]\d{6,14}$/, 'Phone number must be in E.164 format (e.g., +919876543210)');
 
-// Identifier / QR Lookup
-export const identifierLookupSchema = z.object({
-  token: z
-    .string()
-    .trim()
-    .min(16, 'Identifier token must be at least 16 characters')
-    .max(128, 'Identifier token is too long')
-    .regex(/^[A-Za-z0-9_-]+$/, 'Invalid token format; opaque alphanumeric characters only'),
-  accessReason: z.string().trim().min(3).max(255).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
-});
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format');
 
-// Emergency Contact
-export const emergencyContactSchema = z.object({
-  fullName: z.string().trim().min(2, 'Name must be at least 2 characters').max(120),
-  relationship: z.string().trim().min(2).max(60),
-  primaryPhone: z
-    .string()
-    .trim()
-    .min(8, 'Primary phone must be at least 8 digits')
-    .max(20)
-    .regex(/^\+?[0-9\s\-()]+$/, 'Invalid phone number format'),
-  alternatePhone: z
-    .string()
-    .trim()
-    .min(8)
-    .max(20)
-    .regex(/^\+?[0-9\s\-()]+$/, 'Invalid phone number format')
-    .optional()
-    .nullable(),
-  priority: z.enum([ContactPriority.PRIMARY, ContactPriority.SECONDARY, ContactPriority.TERTIARY]).default(ContactPriority.PRIMARY),
-  notes: z.string().trim().max(500).optional().nullable(),
-});
+const password = z
+  .string()
+  .min(SECURITY_LIMITS.MIN_PASSWORD_LENGTH, `Password must be at least ${SECURITY_LIMITS.MIN_PASSWORD_LENGTH} characters`)
+  .max(SECURITY_LIMITS.MAX_PASSWORD_LENGTH, `Password must be at most ${SECURITY_LIMITS.MAX_PASSWORD_LENGTH} characters`);
 
-// Medical Information
-export const medicalInfoSchema = z.object({
-  category: z.string().trim().min(2).max(100), // e.g. "ALLERGY", "MEDICATION", "CHRONIC_CONDITION"
-  summary: z.string().trim().min(2).max(255),
-  details: z.string().trim().max(2000).optional().nullable(),
-  source: z.enum([
-    MedicalInfoSource.SELF_REPORTED,
-    MedicalInfoSource.FAMILY_REPORTED,
-    MedicalInfoSource.PHYSICIAN_DOCUMENTED,
-    MedicalInfoSource.DEVICE_MEDICAL_ID,
-  ]).default(MedicalInfoSource.SELF_REPORTED),
-});
+const cuid = z.string().cuid('Invalid resource ID format');
 
-// Unidentified Case
-export const unidentifiedCaseSchema = z.object({
-  estimatedAge: z.string().trim().max(50).optional().nullable(),
-  estimatedGender: z.string().trim().max(30).optional().nullable(),
-  physicalDescription: z.string().trim().max(2000).optional().nullable(),
-  clothingDescription: z.string().trim().max(1000).optional().nullable(),
-  distinguishingFeatures: z.string().trim().max(1000).optional().nullable(), // scars, tattoos, jewelry
-  locationFound: z.string().trim().min(3, 'Location found is required').max(255),
-  hospitalName: z.string().trim().max(255).optional().nullable(),
-  urgency: z.enum([UrgencyLevel.CRITICAL, UrgencyLevel.URGENT, UrgencyLevel.STABLE, UrgencyLevel.UNKNOWN]).default(UrgencyLevel.URGENT),
-  notes: z.string().trim().max(2000).optional().nullable(),
-});
+// ---------------------------------------------------------------------------
+// Auth schemas
+// ---------------------------------------------------------------------------
 
-export const updateCaseStatusSchema = z.object({
-  status: z.enum([
-    CaseStatus.OPEN_UNIDENTIFIED,
-    CaseStatus.INVESTIGATING,
-    CaseStatus.PROVISIONALLY_IDENTIFIED,
-    CaseStatus.RESOLVED_IDENTIFIED,
-    CaseStatus.CLOSED_UNRESOLVED,
-  ]),
-  notes: z.string().trim().max(1000).optional(),
-});
+export const RegisterSchema = z
+  .object({
+    email: z.string().email('Valid email address required'),
+    password,
+    confirmPassword: z.string(),
+    firstName: z.string().min(1).max(100).trim(),
+    lastName: z.string().min(1).max(100).trim(),
+    phone: phoneE164.optional(),
+    // Patients self-register. Responders/Admins are provisioned by org admins.
+    role: z.literal('PATIENT').default('PATIENT'),
+  })
+  .strict()
+  .refine((d) => d.password === d.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
-// Contact Attempt Recording
-export const contactAttemptSchema = z.object({
-  emergencyContactId: z.string().uuid('Invalid contact ID'),
-  method: z.string().trim().min(2).max(50), // e.g. "PHONE_CALL", "DIRECT_ALERT"
-  outcome: z.enum([
-    ContactOutcome.CONNECTED_AWARE,
-    ContactOutcome.NO_ANSWER,
-    ContactOutcome.VOICEMAIL_LEFT,
-    ContactOutcome.WRONG_NUMBER,
-    ContactOutcome.BUSY,
-    ContactOutcome.CALL_FAILED,
-  ]),
-  notes: z.string().trim().max(1000).optional().nullable(),
-});
+export const LoginSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(1),
+  })
+  .strict();
 
-// Privacy Request Schema (DPDPA 2023 alignment)
-export const privacyRequestSchema = z.object({
-  requestType: z.enum([
-    PrivacyRequestType.ACCESS_EXPORT,
-    PrivacyRequestType.RECTIFICATION,
-    PrivacyRequestType.ERASURE_FORGOTTEN,
-    PrivacyRequestType.RESTRICTION,
-  ]),
-  reason: z.string().trim().min(5, 'Reason must be provided').max(1000),
-});
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1),
+    newPassword: password,
+    confirmNewPassword: z.string(),
+  })
+  .strict()
+  .refine((d) => d.newPassword === d.confirmNewPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmNewPassword'],
+  })
+  .refine((d) => d.currentPassword !== d.newPassword, {
+    message: 'New password must differ from current password',
+    path: ['newPassword'],
+  });
+
+// ---------------------------------------------------------------------------
+// Patient profile schemas
+// ---------------------------------------------------------------------------
+
+export const UpdatePatientProfileSchema = z
+  .object({
+    preferredName: z.string().max(100).trim().optional(),
+    dateOfBirth: isoDate.optional(),
+    bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown']).optional(),
+    organDonorStatus: z.boolean().optional(),
+    // Advance directive is a text note — not a clinical prescription
+    advanceDirectiveNote: z.string().max(2000).trim().optional(),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
+// Medical information schemas
+// ---------------------------------------------------------------------------
+
+export const CreateMedicalInformationSchema = z
+  .object({
+    type: z.enum(['ALLERGY', 'MEDICATION', 'CONDITION', 'SURGICAL_HISTORY', 'IMMUNIZATION']),
+    name: z.string().min(1).max(200).trim(),
+    detail: z.string().max(1000).trim().optional(),
+    severity: z.enum(['MILD', 'MODERATE', 'SEVERE', 'LIFE_THREATENING']).optional(),
+    source: z.nativeEnum(MedicalInfoSource),
+    sourceReference: z.string().max(500).trim().optional(), // e.g., hospital record number
+    verificationMethod: z.string().max(200).trim().optional(),
+    effectiveFrom: isoDate.optional(),
+    effectiveUntil: isoDate.optional(),
+    isCurrentlyActive: z.boolean().default(true),
+  })
+  .strict();
+
+export const UpdateMedicalInformationSchema = CreateMedicalInformationSchema.partial().strict();
+
+// ---------------------------------------------------------------------------
+// Emergency contact schemas
+// ---------------------------------------------------------------------------
+
+export const CreateEmergencyContactSchema = z
+  .object({
+    fullName: z.string().min(1).max(200).trim(),
+    relationship: z.string().min(1).max(100).trim(),
+    phone: phoneE164,
+    alternatePhone: phoneE164.optional(),
+    email: z.string().email().optional(),
+    priority: z.nativeEnum(ContactPriority),
+    // Patient declares the safety classification.
+    // Responders cannot override this field — enforced server-side.
+    safetyStatus: z.nativeEnum(ContactSafetyStatus).default(ContactSafetyStatus.SAFE),
+    // Free-text reason visible only to internal case managers, not displayed to responders
+    safetyNote: z.string().max(500).trim().optional(),
+    languagesSpoken: z.array(z.string().max(50)).max(10).optional(),
+    notifyOnEmergency: z.boolean().default(true),
+    consentToContact: z.boolean().default(true),
+  })
+  .strict();
+
+export const UpdateEmergencyContactSchema = CreateEmergencyContactSchema.partial().strict();
+
+// ---------------------------------------------------------------------------
+// Patient identifier (QR) schemas
+// ---------------------------------------------------------------------------
+
+export const IssueIdentifierSchema = z
+  .object({
+    type: z.nativeEnum(IdentifierType).default(IdentifierType.QR_CODE),
+    label: z.string().max(100).trim().optional(), // e.g. "Wallet card", "Wristband"
+    expiresInDays: z.number().int().min(1).max(3650).optional(), // null → no expiry
+  })
+  .strict();
+
+export const RevokeIdentifierSchema = z
+  .object({
+    reason: z.string().min(1).max(500).trim(),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
+// Identification lookup schema
+// ---------------------------------------------------------------------------
+
+export const TokenLookupSchema = z
+  .object({
+    // The raw QR token from the physical QR code (24 bytes, base64url)
+    token: z.string().min(10).max(64).trim(),
+    // Access reason is mandatory — feeds the audit trail
+    accessReason: z.string().min(5).max(500).trim(),
+    // Optional GPS coordinates from the responder's device
+    gpsLatitude: z.number().min(-90).max(90).optional(),
+    gpsLongitude: z.number().min(-180).max(180).optional(),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
+// Unidentified case schemas
+// ---------------------------------------------------------------------------
+
+export const CreateCaseSchema = z
+  .object({
+    title: z.string().min(1).max(200).trim(),
+    description: z.string().max(5000).trim(),
+    urgencyLevel: z.nativeEnum(UrgencyLevel),
+    location: z.string().min(1).max(500).trim(),
+    gpsLatitude: z.number().min(-90).max(90).optional(),
+    gpsLongitude: z.number().min(-180).max(180).optional(),
+    // idempotencyKey prevents duplicate cases on mobile re-submissions
+    idempotencyKey: z.string().uuid('idempotencyKey must be a UUID v4'),
+  })
+  .strict();
+
+export const UpdateCaseSchema = z
+  .object({
+    title: z.string().min(1).max(200).trim().optional(),
+    description: z.string().max(5000).trim().optional(),
+    urgencyLevel: z.nativeEnum(UrgencyLevel).optional(),
+    location: z.string().min(1).max(500).trim().optional(),
+    notes: z.string().max(2000).trim().optional(),
+  })
+  .strict();
+
+export const AddCaseEventSchema = z
+  .object({
+    eventType: z.string().min(1).max(100).trim(),
+    description: z.string().min(1).max(2000).trim(),
+    recordedAt: z.string().datetime({ offset: true }).optional(), // ISO 8601 — defaults to server time
+  })
+  .strict();
+
+export const RecordContactAttemptSchema = z
+  .object({
+    contactId: cuid,
+    outcome: z.string().min(1).max(100).trim(),
+    notes: z.string().max(500).trim().optional(),
+    attemptedAt: z.string().datetime({ offset: true }).optional(),
+  })
+  .strict();
+
+export const AssignCaseSchema = z
+  .object({
+    assigneeUserId: cuid,
+    note: z.string().max(500).trim().optional(),
+  })
+  .strict();
+
+export const TransferCaseSchema = z
+  .object({
+    targetOrganisationId: cuid,
+    reason: z.string().min(1).max(1000).trim(),
+    patientConditionSummary: z.string().max(2000).trim().optional(),
+  })
+  .strict();
+
+export const AcknowledgeTransferSchema = z
+  .object({
+    accept: z.boolean(),
+    rejectionReason: z.string().max(500).trim().optional(),
+  })
+  .strict()
+  .refine(
+    (d) => d.accept || (d.rejectionReason && d.rejectionReason.length > 0),
+    { message: 'rejectionReason is required when accept is false', path: ['rejectionReason'] },
+  );
+
+// ---------------------------------------------------------------------------
+// Privacy request schemas
+// ---------------------------------------------------------------------------
+
+export const CreatePrivacyRequestSchema = z
+  .object({
+    requestType: z.nativeEnum(PrivacyRequestType),
+    detail: z.string().min(5).max(2000).trim(),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
+// Admin provisioning schemas
+// ---------------------------------------------------------------------------
+
+export const CreateOrganisationSchema = z
+  .object({
+    name: z.string().min(1).max(200).trim(),
+    type: z.enum([
+      'HOSPITAL',
+      'AMBULANCE_SERVICE',
+      'LAW_ENFORCEMENT',
+      'FIRE_RESCUE',
+      'EMERGENCY_SERVICES',
+    ]),
+    city: z.string().max(100).trim().optional(),
+    state: z.string().max(100).trim().optional(),
+    country: z.string().length(2).toUpperCase().default('IN'), // ISO 3166-1 alpha-2
+    phone: phoneE164.optional(),
+    email: z.string().email().optional(),
+  })
+  .strict();
+
+export const ProvisionUserSchema = z
+  .object({
+    email: z.string().email(),
+    firstName: z.string().min(1).max(100).trim(),
+    lastName: z.string().min(1).max(100).trim(),
+    role: z.enum(['RESPONDER', 'DISPATCHER', 'ADMIN', 'AUDITOR']),
+    organisationId: cuid,
+    // Temporary password — user must change on first login
+    temporaryPassword: password,
+    sendWelcomeEmail: z.boolean().default(false), // Email sending is not implemented in MVP
+  })
+  .strict();
+
+export const AddOrganisationMemberSchema = z
+  .object({
+    userId: cuid,
+    role: z.enum(['RESPONDER', 'DISPATCHER', 'ADMIN', 'AUDITOR']),
+  })
+  .strict();

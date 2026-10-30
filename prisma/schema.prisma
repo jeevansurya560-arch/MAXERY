@@ -7,11 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ========================================================================
+// ENUMS — must stay in sync with packages/shared/src/enums/index.js
+// ========================================================================
+
 enum UserRole {
   RESPONDER
   ADMIN
   PATIENT
   DISPATCHER
+  AUDITOR
 }
 
 enum OrganisationType {
@@ -33,6 +38,7 @@ enum IdentifierStatus {
   ACTIVE
   REVOKED
   EXPIRED
+  ROTATED    // Predecessor token — succeeded by a new identifier
   SUSPENDED
 }
 
@@ -41,6 +47,7 @@ enum MedicalInfoSource {
   FAMILY_REPORTED
   PHYSICIAN_DOCUMENTED
   DEVICE_MEDICAL_ID
+  ELECTRONIC_HEALTH_RECORD
 }
 
 enum VerificationStatus {
@@ -48,6 +55,15 @@ enum VerificationStatus {
   PENDING_REVIEW
   VERIFIED
   DISPUTED
+}
+
+// Domestic violence / personal safety classification for emergency contacts.
+// Must be set by the patient only. Responders cannot write this field.
+enum ContactSafetyStatus {
+  SAFE
+  RESTRICTED       // Do not contact without patient in-person consent
+  PROHIBITED       // Active DVO or restraining order — must not contact
+  REVIEW_REQUIRED  // Flag for case manager review before any contact
 }
 
 enum ContactPriority {
@@ -63,6 +79,7 @@ enum ContactOutcome {
   WRONG_NUMBER
   BUSY
   CALL_FAILED
+  RESTRICTED_CONTACT_BLOCKED
 }
 
 enum CaseStatus {
@@ -71,6 +88,7 @@ enum CaseStatus {
   PROVISIONALLY_IDENTIFIED
   RESOLVED_IDENTIFIED
   CLOSED_UNRESOLVED
+  TRANSFERRED          // Active ownership transferred to another organisation
 }
 
 enum UrgencyLevel {
@@ -80,6 +98,7 @@ enum UrgencyLevel {
   UNKNOWN
 }
 
+// Uniform outcome enum — FAILED_* values are indistinguishable externally to prevent oracle attacks
 enum IdentificationStatus {
   SUCCESS_MATCHED
   FAILED_INVALID_TOKEN
@@ -88,18 +107,41 @@ enum IdentificationStatus {
   FAILED_UNAUTHORIZED
 }
 
+enum LookupSessionStatus {
+  ACTIVE
+  CONSUMED  // Record accessed — this session is single-use
+  EXPIRED
+  REVOKED
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  REASSIGNED
+  RELEASED
+}
+
+enum TransferStatus {
+  PENDING         // Sent by source org, awaiting receiving org acknowledgement
+  ACKNOWLEDGED    // Receiving org confirmed
+  REJECTED        // Receiving org declined
+  COMPLETED       // Patient physically moved; case ownership transferred
+}
+
 enum PrivacyRequestType {
   ACCESS_EXPORT
   RECTIFICATION
   ERASURE_FORGOTTEN
   RESTRICTION
+  OBJECTION
 }
 
 enum PrivacyRequestStatus {
-  PENDING
+  SUBMITTED
   IN_REVIEW
+  PROCESSING
   COMPLETED
   REJECTED
+  EXTENDED  // Regulator notified of extension per DPDPA §13
 }
 
 enum OutboxStatus {
@@ -109,24 +151,33 @@ enum OutboxStatus {
   FAILED
 }
 
+// ========================================================================
+// MODELS
+// ========================================================================
+
 model User {
   id                      String                   @id @default(uuid())
   email                   String                   @unique
+  // scrypt hash: format "hash:salt" (base64:base64). Never plaintext.
   passwordHash            String
-  fullName                String
-  role                    UserRole                 @default(RESPONDER)
+  firstName               String
+  lastName                String
   phone                   String?
   badgeNumber             String?
   isActive                Boolean                  @default(true)
+  mustChangePassword      Boolean                  @default(false) // Provisioned users
   lastLoginAt             DateTime?
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
 
   memberships             OrganisationMembership[]
+  sessions                Session[]
   patientProfile          Patient?
   identificationAttempts  IdentificationAttempt[]
-  unidentifiedCases       UnidentifiedCase[]       @relation("AssignedResponder")
   caseEvents              CaseEvent[]
+  caseAssignments         CaseAssignment[]
+  caseTransfersSent       CaseTransfer[]           @relation("TransferSentBy")
+  caseTransfersReceived   CaseTransfer[]           @relation("TransferReceivedBy")
   contactAttempts         ContactAttempt[]
   auditEvents             AuditEvent[]
   verifiedMedicalInfos    MedicalInformation[]     @relation("VerifiedByUser")
@@ -141,9 +192,12 @@ model Organisation {
   name           String
   code           String                   @unique
   type           OrganisationType         @default(HOSPITAL)
-  contactEmail   String
+  contactEmail   String?
   contactPhone   String?
   address        String?
+  city           String?
+  state          String?
+  country        String                   @default("IN")
   jurisdiction   String?
   isVerified     Boolean                  @default(false)
   isActive       Boolean                  @default(true)
@@ -152,16 +206,20 @@ model Organisation {
 
   memberships    OrganisationMembership[]
   attempts       IdentificationAttempt[]
-  cases          UnidentifiedCase[]
+  cases          UnidentifiedCase[]       @relation("PrimaryOrg")
+  receivedCases  UnidentifiedCase[]       @relation("CurrentOrg")
+  incomingTransfers CaseTransfer[]        @relation("TransferTargetOrg")
+  outgoingTransfers CaseTransfer[]        @relation("TransferSourceOrg")
 
   @@index([code])
+  @@index([type])
 }
 
 model OrganisationMembership {
   id             String       @id @default(uuid())
   userId         String
   organisationId String
-  roleInOrg      String       @default("MEMBER")
+  role           UserRole     @default(RESPONDER)
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -170,212 +228,387 @@ model OrganisationMembership {
   organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organisationId])
+  @@index([organisationId, role])
+}
+
+// ---------------------------------------------------------------------------
+// Session — server-managed opaque session tokens (replaces JWT approach)
+// The raw token is issued to the client as an HttpOnly cookie.
+// Only the SHA-256 hash is stored here.
+// ---------------------------------------------------------------------------
+model Session {
+  id           String    @id @default(uuid())
+  userId       String
+  // SHA-256(rawToken). rawToken is a 32-byte cryptographically random value,
+  // base64url encoded, delivered as an HttpOnly cookie. Never stored plaintext.
+  tokenHash    String    @unique
+  userAgent    String?
+  ipAddress    String?
+  isActive     Boolean   @default(true)
+  lastActiveAt DateTime  @default(now())
+  expiresAt    DateTime  // Absolute expiry — set at creation
+  createdAt    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([tokenHash])
+  @@index([expiresAt])
 }
 
 model Patient {
-  id                   String                 @id @default(uuid())
-  userId               String?                @unique
-  publicCode           String                 @unique @default(uuid())
-  dateOfBirth          DateTime?
-  bloodGroup           String?
-  gender               String?
-  primaryLanguage      String?                @default("English")
-  allergiesSummary     String?
-  conditionsSummary    String?
-  medicationsSummary   String?
-  isOrganDonor         Boolean                @default(false)
-  emergencyNotes       String?
-  isActive             Boolean                @default(true)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  id                     String                 @id @default(uuid())
+  userId                 String?                @unique
+  preferredName          String?
+  dateOfBirth            DateTime?
+  bloodGroup             String?
+  biologicalSex          String?
+  primaryLanguage        String?                @default("English")
+  isOrganDonor           Boolean                @default(false)
+  // Free-text advance directive summary — not a legal document
+  advanceDirectiveNote   String?
+  emergencyNotes         String?                // Critical notes visible at top of emergency view
+  isActive               Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
 
-  user                 User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
-  identifiers          PatientIdentifier[]
-  medicalInformation   MedicalInformation[]
-  emergencyContacts    EmergencyContact[]
-  matchedAttempts      IdentificationAttempt[]
-  resolvedCases        UnidentifiedCase[]
-  consentRecords       ConsentRecord[]
-  privacyRequests      PrivacyRequest[]
-
-  @@index([publicCode])
+  user                   User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  identifiers            PatientIdentifier[]
+  medicalInformation     MedicalInformation[]
+  emergencyContacts      EmergencyContact[]
+  matchedAttempts        IdentificationAttempt[]
+  lookupSessions         LookupSession[]
+  resolvedCases          UnidentifiedCase[]
+  consentRecords         ConsentRecord[]
+  privacyRequests        PrivacyRequest[]
 }
 
+// ---------------------------------------------------------------------------
+// PatientIdentifier — QR token lifecycle
+// SECURITY: publicToken is NEVER stored. Only tokenHash (SHA-256) is persisted.
+// ---------------------------------------------------------------------------
 model PatientIdentifier {
   id               String           @id @default(uuid())
   patientId        String
   identifierType   IdentifierType   @default(QR_CODE)
-  publicToken      String           @unique
-  tokenHash        String?          @unique
+  label            String?          // Human label: "Wallet card", "Wristband"
+  // SHA-256(rawToken where rawToken = base64url(randomBytes(24)))
+  // The rawToken is returned to the patient once on issuance and never stored.
+  tokenHash        String           @unique
   status           IdentifierStatus @default(ACTIVE)
   expiresAt        DateTime?
   revokedAt        DateTime?
   revocationReason String?
+  // If this is a rotation successor, link to the predecessor
+  rotatedFromId    String?
+  issuedAt         DateTime         @default(now())
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
   patient          Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  rotatedFrom      PatientIdentifier? @relation("RotationChain", fields: [rotatedFromId], references: [id], onDelete: SetNull)
+  rotations        PatientIdentifier[] @relation("RotationChain")
+  lookupSessions   LookupSession[]
 
-  @@index([publicToken])
+  @@index([tokenHash])
+  @@index([patientId, status])
   @@index([status])
 }
 
+// ---------------------------------------------------------------------------
+// LookupSession — short-lived authorized emergency record access context
+// Created after a successful QR identification. Single-use. 30-min TTL.
+// The frontend URL uses the LookupSession ID, never the raw QR token.
+// ---------------------------------------------------------------------------
+model LookupSession {
+  id                      String              @id @default(uuid())
+  patientIdentifierId     String
+  patientId               String
+  responderUserId         String
+  // SHA-256(rawSessionToken). rawSessionToken is a 24-byte random value.
+  // Issued as a short-lived bearer token in the identification response.
+  sessionTokenHash        String              @unique
+  status                  LookupSessionStatus @default(ACTIVE)
+  identificationAttemptId String?
+  expiresAt               DateTime
+  consumedAt              DateTime?           // When the record was first accessed
+  ipAddress               String?
+  createdAt               DateTime            @default(now())
+
+  patientIdentifier       PatientIdentifier   @relation(fields: [patientIdentifierId], references: [id], onDelete: Cascade)
+  patient                 Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([sessionTokenHash])
+  @@index([patientId])
+  @@index([expiresAt, status])
+}
+
+// ---------------------------------------------------------------------------
+// MedicalInformation — full provenance chain required for emergency use
+// ---------------------------------------------------------------------------
 model MedicalInformation {
   id                 String             @id @default(uuid())
   patientId          String
+  // Type: ALLERGY | MEDICATION | CONDITION | SURGICAL_HISTORY | IMMUNIZATION
   category           String
-  summary            String
-  details            String?
+  name               String
+  detail             String?
+  severity           String?            // MILD | MODERATE | SEVERE | LIFE_THREATENING
   source             MedicalInfoSource  @default(SELF_REPORTED)
+  // Provenance — so responders can judge the reliability of the information
+  sourceReference    String?            // e.g., hospital record ID, prescribing doctor
+  verificationMethod String?            // e.g., "Prescription document uploaded"
   verificationStatus VerificationStatus @default(UNVERIFIED)
   verifiedByUserId   String?
   verifiedAt         DateTime?
+  recordedAt         DateTime           @default(now())
+  lastReviewedAt     DateTime?
+  effectiveFrom      DateTime?          // When this record becomes/became relevant
+  effectiveUntil     DateTime?          // When this record should be considered expired
+  isCurrentlyActive  Boolean            @default(true)
+  disputedAt         DateTime?          // Set when patient disputes this record
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
   patient            Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
   verifiedByUser     User?              @relation("VerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
 
-  @@index([patientId])
+  @@index([patientId, isCurrentlyActive])
   @@index([verificationStatus])
 }
 
+// ---------------------------------------------------------------------------
+// EmergencyContact — with domestic safety controls
+// ---------------------------------------------------------------------------
 model EmergencyContact {
-  id              String            @id @default(uuid())
+  id              String              @id @default(uuid())
   patientId       String
   fullName        String
   relationship    String
-  primaryPhone    String
+  primaryPhone    String              // E.164 format
   alternatePhone  String?
-  priority        ContactPriority   @default(PRIMARY)
-  isVerified      Boolean           @default(false)
-  consentStatus   String            @default("OPTED_IN")
-  notes           String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  email           String?
+  priority        ContactPriority     @default(PRIMARY)
+  // Domestic safety status — set by patient only. Responders cannot write this.
+  safetyStatus    ContactSafetyStatus @default(SAFE)
+  // Restriction reason category visible only to case managers, not responders
+  restrictionReasonCategory String?
+  // Internal safety note — not surfaced to responders
+  safetyNote      String?
+  // Window when contact is safe to reach (e.g., "Mon-Fri 09:00-18:00 IST")
+  safeContactWindow String?
+  // When the patient last confirmed this contact is still safe and correct
+  lastVerifiedAt  DateTime?
+  languagesSpoken String[]            @default([])
+  notifyOnEmergency Boolean           @default(true)
+  consentToContact Boolean            @default(true)
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
-  patient         Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient         Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
   contactAttempts ContactAttempt[]
 
-  @@index([patientId])
+  @@index([patientId, isActive])
   @@index([priority])
+  @@index([safetyStatus])
 }
 
 model IdentificationAttempt {
-  id               String               @id @default(uuid())
-  responderUserId  String
-  organisationId   String?
-  identifierType   IdentifierType       @default(QR_CODE)
-  identifierToken  String
-  matchedPatientId String?
-  status           IdentificationStatus
-  failureReason    String?
-  accessReason     String?
-  latitude         Float?
-  longitude        Float?
-  createdAt        DateTime             @default(now())
+  id                      String               @id @default(uuid())
+  responderUserId         String
+  organisationId          String?
+  identifierType          IdentifierType       @default(QR_CODE)
+  // SHA-256 of the token the responder submitted — links to PatientIdentifier.tokenHash
+  submittedTokenHash      String
+  matchedPatientId        String?
+  status                  IdentificationStatus
+  failureReason           String?              // Internal only — never returned to caller
+  accessReason            String               // Mandatory audit trail field
+  latitude                Float?
+  longitude               Float?
+  createdAt               DateTime             @default(now())
 
-  responder        User                 @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
-  organisation     Organisation?        @relation(fields: [organisationId], references: [id], onDelete: SetNull)
-  matchedPatient   Patient?             @relation(fields: [matchedPatientId], references: [id], onDelete: SetNull)
+  responder               User                 @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
+  organisation            Organisation?        @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  matchedPatient          Patient?             @relation(fields: [matchedPatientId], references: [id], onDelete: SetNull)
 
-  @@index([responderUserId])
+  @@index([responderUserId, createdAt])
   @@index([matchedPatientId])
-  @@index([identifierToken])
+  @@index([submittedTokenHash])
   @@index([createdAt])
 }
 
+// ---------------------------------------------------------------------------
+// UnidentifiedCase — full lifecycle with idempotency and org tracking
+// ---------------------------------------------------------------------------
 model UnidentifiedCase {
-  id                     String           @id @default(uuid())
-  caseNumber             String           @unique
-  status                 CaseStatus       @default(OPEN_UNIDENTIFIED)
-  urgency                UrgencyLevel     @default(URGENT)
-  responderUserId        String
-  organisationId         String?
-  patientId              String?
-  estimatedAge           String?
-  estimatedGender        String?
-  physicalDescription    String?
-  clothingDescription    String?
-  distinguishingFeatures String?
-  locationFound          String
-  hospitalName           String?
-  notes                  String?
-  resolvedAt             DateTime?
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
+  id                      String           @id @default(uuid())
+  caseNumber              String           @unique // CASE-YYYY-NNNNNN
+  status                  CaseStatus       @default(OPEN_UNIDENTIFIED)
+  urgency                 UrgencyLevel     @default(URGENT)
+  // The responder who created the case
+  createdByUserId         String
+  // The organisation that originated the case
+  originOrganisationId    String?
+  // The organisation currently responsible (changes on transfer)
+  currentOrganisationId   String?
+  // Linked to a patient profile once identification is confirmed
+  resolvedPatientId       String?
+  // Case facts
+  estimatedAge            String?
+  estimatedGender         String?
+  physicalDescription     String?
+  clothingDescription     String?
+  distinguishingFeatures  String?
+  locationFound           String
+  hospitalName            String?
+  notes                   String?
+  resolvedAt              DateTime?
+  // Idempotency key (UUID v4) submitted by the client — prevents duplicate cases
+  idempotencyKey          String?          @unique
+  // Optimistic concurrency version — increment on every update
+  version                 Int              @default(1)
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
 
-  responder              User             @relation("AssignedResponder", fields: [responderUserId], references: [id], onDelete: Restrict)
-  organisation           Organisation?    @relation(fields: [organisationId], references: [id], onDelete: SetNull)
-  identifiedPatient      Patient?         @relation(fields: [patientId], references: [id], onDelete: SetNull)
-  events                 CaseEvent[]
-  contactAttempts        ContactAttempt[]
+  createdBy               User             @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  originOrganisation      Organisation?    @relation("PrimaryOrg", fields: [originOrganisationId], references: [id], onDelete: SetNull)
+  currentOrganisation     Organisation?    @relation("CurrentOrg", fields: [currentOrganisationId], references: [id], onDelete: SetNull)
+  resolvedPatient         Patient?         @relation(fields: [resolvedPatientId], references: [id], onDelete: SetNull)
+  events                  CaseEvent[]
+  assignments             CaseAssignment[]
+  transfers               CaseTransfer[]
+  contactAttempts         ContactAttempt[]
 
   @@index([caseNumber])
   @@index([status])
-  @@index([responderUserId])
+  @@index([currentOrganisationId, status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// CaseAssignment — explicit assignment lifecycle record
+// ---------------------------------------------------------------------------
+model CaseAssignment {
+  id              String           @id @default(uuid())
+  caseId          String
+  assigneeUserId  String
+  assignedByUserId String
+  status          AssignmentStatus @default(ACTIVE)
+  note            String?
+  assignedAt      DateTime         @default(now())
+  releasedAt      DateTime?
+  createdAt       DateTime         @default(now())
+
+  case            UnidentifiedCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  assignee        User             @relation(fields: [assigneeUserId], references: [id], onDelete: Restrict)
+
+  @@index([caseId, status])
+  @@index([assigneeUserId, status])
+}
+
+// ---------------------------------------------------------------------------
+// CaseTransfer — cross-organisation handover
+// ---------------------------------------------------------------------------
+model CaseTransfer {
+  id                      String         @id @default(uuid())
+  caseId                  String
+  sourceOrganisationId    String?
+  targetOrganisationId    String
+  initiatedByUserId       String
+  acknowledgedByUserId    String?
+  status                  TransferStatus @default(PENDING)
+  transferReason          String
+  patientConditionSummary String?
+  rejectionReason         String?
+  requestedAt             DateTime       @default(now())
+  acknowledgedAt          DateTime?
+  completedAt             DateTime?
+  createdAt               DateTime       @default(now())
+
+  case                    UnidentifiedCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  sourceOrganisation      Organisation?    @relation("TransferSourceOrg", fields: [sourceOrganisationId], references: [id], onDelete: SetNull)
+  targetOrganisation      Organisation     @relation("TransferTargetOrg", fields: [targetOrganisationId], references: [id], onDelete: Restrict)
+  initiatedBy             User             @relation("TransferSentBy", fields: [initiatedByUserId], references: [id], onDelete: Restrict)
+  acknowledgedBy          User?            @relation("TransferReceivedBy", fields: [acknowledgedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([caseId])
+  @@index([targetOrganisationId, status])
 }
 
 model CaseEvent {
   id          String           @id @default(uuid())
   caseId      String
   userId      String?
-  eventType   String
+  eventType   String           // e.g., STATUS_CHANGE, CONTACT_ATTEMPT, NOTE_ADDED
   description String
   metadata    Json?
+  recordedAt  DateTime         @default(now())
   createdAt   DateTime         @default(now())
 
   case        UnidentifiedCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
   user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@index([caseId])
-  @@index([createdAt])
+  @@index([caseId, recordedAt])
 }
 
 model ContactAttempt {
-  id                 String           @id @default(uuid())
+  id                 String            @id @default(uuid())
   caseId             String?
   emergencyContactId String
   responderUserId    String
-  method             String           @default("PHONE_CALL")
+  method             String            @default("PHONE_CALL")
   outcome            ContactOutcome
+  // If the contact was blocked by safety status, record why
+  safetyBlockReason  String?
   notes              String?
-  attemptTimestamp   DateTime         @default(now())
-  createdAt          DateTime         @default(now())
+  attemptedAt        DateTime          @default(now())
+  createdAt          DateTime          @default(now())
 
   case               UnidentifiedCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
-  emergencyContact   EmergencyContact @relation(fields: [emergencyContactId], references: [id], onDelete: Cascade)
-  responder          User             @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
+  emergencyContact   EmergencyContact  @relation(fields: [emergencyContactId], references: [id], onDelete: Cascade)
+  responder          User              @relation(fields: [responderUserId], references: [id], onDelete: Restrict)
 
   @@index([emergencyContactId])
-  @@index([responderUserId])
+  @@index([responderUserId, attemptedAt])
 }
 
 model ConsentRecord {
-  id              String   @id @default(uuid())
-  patientId       String
-  consentType     String
-  granted         Boolean  @default(true)
-  purpose         String
+  id               String   @id @default(uuid())
+  patientId        String
+  consentType      String   // EMERGENCY_ACCESS | DATA_PROCESSING | CONTACT_DISCLOSURE
+  granted          Boolean  @default(true)
+  purpose          String
+  legalBasis       String?  // DPDPA 2023 section reference
   recordedByUserId String?
-  validUntil      DateTime?
-  ipAddress       String?
-  createdAt       DateTime @default(now())
+  validFrom        DateTime @default(now())
+  validUntil       DateTime?
+  ipAddress        String?
+  userAgentHash    String?  // Hash of user agent — not plaintext
+  createdAt        DateTime @default(now())
 
-  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient          Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
-  @@index([patientId])
+  @@index([patientId, consentType])
 }
 
+// ---------------------------------------------------------------------------
+// AuditEvent — append-only immutable security log
+// The application DB user must have INSERT-only rights on this table.
+// No UPDATE or DELETE is ever issued by application code.
+// ---------------------------------------------------------------------------
 model AuditEvent {
   id             String   @id @default(uuid())
   userId         String?
   organisationId String?
-  action         String
+  action         String   // AuditAction enum value
   entityType     String
   entityId       String?
   ipAddress      String?
-  userAgent      String?
+  userAgentHash  String?  // Hash — never plaintext user agent
+  // Metadata is an allowlisted set of non-sensitive fields only.
+  // Sensitive values (tokens, passwords, PHI field values) must never appear here.
   metadata       Json?
   createdAt      DateTime @default(now())
 
@@ -384,6 +617,7 @@ model AuditEvent {
   @@index([userId])
   @@index([action])
   @@index([entityType, entityId])
+  @@index([organisationId, createdAt])
   @@index([createdAt])
 }
 
@@ -392,10 +626,11 @@ model PrivacyRequest {
   userId           String?
   patientId        String?
   requestType      PrivacyRequestType
-  status           PrivacyRequestStatus @default(PENDING)
+  status           PrivacyRequestStatus @default(SUBMITTED)
   reason           String
   resolutionNotes  String?
   resolvedByUserId String?
+  dueAt            DateTime?            // DPDPA 30-day deadline
   requestedAt      DateTime             @default(now())
   resolvedAt       DateTime?
   createdAt        DateTime             @default(now())
@@ -405,17 +640,25 @@ model PrivacyRequest {
   resolvedByUser   User?                @relation("ResolvedByUser", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
 
   @@index([patientId])
-  @@index([status])
+  @@index([status, dueAt])
 }
 
+// ---------------------------------------------------------------------------
+// OutboxEvent — transactional outbox for guaranteed Socket.IO delivery
+// Polled every 500ms by the background publisher (apps/api/src/jobs/outbox-publisher.js)
+// Row-locked with FOR UPDATE SKIP LOCKED to prevent duplicate processing.
+// ---------------------------------------------------------------------------
 model OutboxEvent {
   id            String       @id @default(uuid())
-  eventType     String
-  aggregateType String
+  eventType     String       // Matches SOCKET_EVENTS constant
+  aggregateType String       // e.g., "UnidentifiedCase", "IdentificationAttempt"
   aggregateId   String
+  // Target room(s) — array of room strings e.g. ["case:abc", "hospital:xyz"]
+  targetRooms   String[]     @default([])
   payload       Json
   status        OutboxStatus @default(PENDING)
   retryCount    Int          @default(0)
+  maxRetries    Int          @default(5)
   nextRetryAt   DateTime     @default(now())
   error         String?
   createdAt     DateTime     @default(now())
@@ -423,4 +666,27 @@ model OutboxEvent {
 
   @@index([status, nextRetryAt])
   @@index([aggregateType, aggregateId])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// IdempotencyRecord — prevents duplicate operations on concurrent requests
+// ---------------------------------------------------------------------------
+model IdempotencyRecord {
+  id             String   @id @default(uuid())
+  // The idempotency key from the request (UUID v4 from the client)
+  idempotencyKey String   @unique
+  // Operation type — prevents key reuse across different operation types
+  operationType  String
+  // HTTP status code returned for the original request
+  responseStatus Int
+  // Serialized response body — returned verbatim on duplicate requests
+  responseBody   Json
+  userId         String?
+  // Expired records are safe to purge by a maintenance job
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([idempotencyKey])
+  @@index([expiresAt])
 }

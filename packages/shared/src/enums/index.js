@@ -3,6 +3,7 @@ export const UserRole = Object.freeze({
   ADMIN: 'ADMIN',
   PATIENT: 'PATIENT',
   DISPATCHER: 'DISPATCHER',
+  AUDITOR: 'AUDITOR',
 });
 
 export const OrganisationType = Object.freeze({
@@ -24,6 +25,7 @@ export const IdentifierStatus = Object.freeze({
   ACTIVE: 'ACTIVE',
   REVOKED: 'REVOKED',
   EXPIRED: 'EXPIRED',
+  ROTATED: 'ROTATED', // predecessor token — replaced by new one via rotation
   SUSPENDED: 'SUSPENDED',
 });
 
@@ -32,6 +34,7 @@ export const MedicalInfoSource = Object.freeze({
   FAMILY_REPORTED: 'FAMILY_REPORTED',
   PHYSICIAN_DOCUMENTED: 'PHYSICIAN_DOCUMENTED',
   DEVICE_MEDICAL_ID: 'DEVICE_MEDICAL_ID',
+  ELECTRONIC_HEALTH_RECORD: 'ELECTRONIC_HEALTH_RECORD',
 });
 
 export const VerificationStatus = Object.freeze({
@@ -39,6 +42,14 @@ export const VerificationStatus = Object.freeze({
   PENDING_REVIEW: 'PENDING_REVIEW',
   VERIFIED: 'VERIFIED',
   DISPUTED: 'DISPUTED',
+});
+
+// Domestic safety classification for emergency contacts
+export const ContactSafetyStatus = Object.freeze({
+  SAFE: 'SAFE',
+  RESTRICTED: 'RESTRICTED',       // Must not be contacted unless patient consents in person
+  PROHIBITED: 'PROHIBITED',       // Active DVO / restraining order — must not contact
+  REVIEW_REQUIRED: 'REVIEW_REQUIRED', // Flag for case manager review before contact
 });
 
 export const ContactPriority = Object.freeze({
@@ -54,6 +65,7 @@ export const ContactOutcome = Object.freeze({
   WRONG_NUMBER: 'WRONG_NUMBER',
   BUSY: 'BUSY',
   CALL_FAILED: 'CALL_FAILED',
+  RESTRICTED_CONTACT_BLOCKED: 'RESTRICTED_CONTACT_BLOCKED',
 });
 
 export const CaseStatus = Object.freeze({
@@ -62,6 +74,7 @@ export const CaseStatus = Object.freeze({
   PROVISIONALLY_IDENTIFIED: 'PROVISIONALLY_IDENTIFIED',
   RESOLVED_IDENTIFIED: 'RESOLVED_IDENTIFIED',
   CLOSED_UNRESOLVED: 'CLOSED_UNRESOLVED',
+  TRANSFERRED: 'TRANSFERRED', // Active in another organisation
 });
 
 export const UrgencyLevel = Object.freeze({
@@ -82,15 +95,50 @@ export const IdentificationMethod = Object.freeze({
 export const AuditAction = Object.freeze({
   AUTH_LOGIN: 'AUTH_LOGIN',
   AUTH_LOGOUT: 'AUTH_LOGOUT',
+  AUTH_SESSION_EXPIRED: 'AUTH_SESSION_EXPIRED',
+  AUTH_PASSWORD_CHANGE: 'AUTH_PASSWORD_CHANGE',
+  QR_ISSUED: 'QR_ISSUED',
+  QR_REVOKED: 'QR_REVOKED',
+  QR_ROTATED: 'QR_ROTATED',
   QR_LOOKUP_ATTEMPT: 'QR_LOOKUP_ATTEMPT',
   QR_LOOKUP_SUCCESS: 'QR_LOOKUP_SUCCESS',
+  QR_LOOKUP_FAILURE: 'QR_LOOKUP_FAILURE',
   PATIENT_RECORD_VIEW: 'PATIENT_RECORD_VIEW',
   MEDICAL_INFO_VIEW: 'MEDICAL_INFO_VIEW',
-  CONTACT_ATTEMPT_RECORDED: 'CONTACT_ATTEMPT_RECORDED',
+  MEDICAL_INFO_MODIFIED: 'MEDICAL_INFO_MODIFIED',
+  CONTACT_ATTEMPTED: 'CONTACT_ATTEMPTED',
+  CONTACT_RESTRICTED_BLOCKED: 'CONTACT_RESTRICTED_BLOCKED',
   CASE_CREATED: 'CASE_CREATED',
   CASE_UPDATED: 'CASE_UPDATED',
+  CASE_ASSIGNED: 'CASE_ASSIGNED',
+  CASE_TRANSFERRED: 'CASE_TRANSFERRED',
+  CASE_CLOSED: 'CASE_CLOSED',
   PRIVACY_DATA_EXPORT: 'PRIVACY_DATA_EXPORT',
   PRIVACY_DATA_DELETION: 'PRIVACY_DATA_DELETION',
+  PRIVACY_REQUEST_SUBMITTED: 'PRIVACY_REQUEST_SUBMITTED',
+  ADMIN_USER_CREATED: 'ADMIN_USER_CREATED',
+  ADMIN_USER_DEACTIVATED: 'ADMIN_USER_DEACTIVATED',
+  ADMIN_ORG_CREATED: 'ADMIN_ORG_CREATED',
+});
+
+export const LookupSessionStatus = Object.freeze({
+  ACTIVE: 'ACTIVE',
+  CONSUMED: 'CONSUMED', // Record accessed — session is single-use
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED',
+});
+
+export const AssignmentStatus = Object.freeze({
+  ACTIVE: 'ACTIVE',
+  REASSIGNED: 'REASSIGNED',
+  RELEASED: 'RELEASED',
+});
+
+export const TransferStatus = Object.freeze({
+  PENDING: 'PENDING',        // Sent by source org, awaiting acknowledgement
+  ACKNOWLEDGED: 'ACKNOWLEDGED', // Receiving org confirmed receipt
+  REJECTED: 'REJECTED',     // Receiving org rejected
+  COMPLETED: 'COMPLETED',   // Patient moved to receiving org
 });
 
 export const PrivacyRequestType = Object.freeze({
@@ -98,13 +146,16 @@ export const PrivacyRequestType = Object.freeze({
   RECTIFICATION: 'RECTIFICATION',
   ERASURE_FORGOTTEN: 'ERASURE_FORGOTTEN',
   RESTRICTION: 'RESTRICTION',
+  OBJECTION: 'OBJECTION',
 });
 
 export const PrivacyRequestStatus = Object.freeze({
-  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
   IN_REVIEW: 'IN_REVIEW',
+  PROCESSING: 'PROCESSING',
   COMPLETED: 'COMPLETED',
   REJECTED: 'REJECTED',
+  EXTENDED: 'EXTENDED', // Regulator notified of extension under DPDPA §13
 });
 
 export const OutboxStatus = Object.freeze({

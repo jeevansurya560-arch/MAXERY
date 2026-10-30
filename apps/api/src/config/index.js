@@ -15,9 +15,19 @@ const configSchema = z.object({
   PORT: z.coerce.number().default(4000),
   HOST: z.string().default('0.0.0.0'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
-  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
+  // SESSION_SECRET must be a strong random secret. No fallback — fail loudly in production.
+  SESSION_SECRET: z
+    .string()
+    .min(32, 'SESSION_SECRET must be at least 32 characters')
+    .refine(
+      (s) => process.env.NODE_ENV !== 'production' || s !== 'maxery_dev_session_secret_change_in_production_minimum_32_chars',
+      'SESSION_SECRET must be changed from the development default in production',
+    ),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
   REDIS_URL: z.string().optional(),
+  // Session settings
+  SESSION_IDLE_TIMEOUT_SECONDS: z.coerce.number().default(1800),   // 30 min
+  SESSION_ABSOLUTE_TIMEOUT_SECONDS: z.coerce.number().default(43200), // 12 hrs
 });
 
 const parsed = configSchema.safeParse({
@@ -25,9 +35,15 @@ const parsed = configSchema.safeParse({
   PORT: process.env.API_PORT || process.env.PORT,
   HOST: process.env.API_HOST || process.env.HOST,
   DATABASE_URL: process.env.DATABASE_URL,
-  JWT_SECRET: process.env.JWT_SECRET || 'maxery_default_dev_secret_key_minimum_32_chars_long',
+  SESSION_SECRET:
+    process.env.SESSION_SECRET ||
+    (process.env.NODE_ENV !== 'production'
+      ? 'maxery_dev_session_secret_change_in_production_minimum_32_chars'
+      : undefined),
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   REDIS_URL: process.env.REDIS_URL,
+  SESSION_IDLE_TIMEOUT_SECONDS: process.env.SESSION_IDLE_TIMEOUT_SECONDS,
+  SESSION_ABSOLUTE_TIMEOUT_SECONDS: process.env.SESSION_ABSOLUTE_TIMEOUT_SECONDS,
 });
 
 if (!parsed.success) {
