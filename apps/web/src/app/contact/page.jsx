@@ -24,34 +24,65 @@ export default function ContactPage() {
       <div className="container" style={{ maxWidth: 880 }}>
         {/* Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow">INSTITUTIONAL PARTNERSHIPS</div>
-          <h1>Responder &amp; Hospital Trauma Network</h1>
-          <p className="section-subtitle">
+          <div className="section-eyebrow" style={{ color: 'var(--color-gold)', letterSpacing: '0.22em' }}>
+            ✦ INSTITUTIONAL ALLIANCES ✦
+          </div>
+          <h1 className="font-royal text-gold-foil" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}>
+            Responder &amp; Hospital Trauma Network
+          </h1>
+          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--text-secondary)' }}>
             Integrate your emergency department, ambulance fleet, or trauma network directly into the MAXERY real-time dispatch mesh.
           </p>
         </div>
 
         {/* Integration Pillars */}
         <div className="grid-3" style={{ marginBottom: '3.5rem' }}>
-          <div className="card-soft">
-            <StatusBadge variant="cyan" style={{ marginBottom: '0.75rem' }}>ER TRAUMA</StatusBadge>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Hospital Integration</h3>
+          <div
+            className="card-soft"
+            style={{
+              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
+              border: '1px solid rgba(212, 175, 55, 0.22)',
+              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem' }}>ER TRAUMA</StatusBadge>
+            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+              Hospital Integration
+            </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               Direct Socket.IO feeds for trauma bays to receive pre-arrival blood group alerts and contraindication warnings.
             </p>
           </div>
 
-          <div className="card-soft">
-            <StatusBadge variant="verified" style={{ marginBottom: '0.75rem' }}>EMS FLEETS</StatusBadge>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Ambulance Fleets</h3>
+          <div
+            className="card-soft"
+            style={{
+              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
+              border: '1px solid rgba(212, 175, 55, 0.22)',
+              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem' }}>EMS FLEETS</StatusBadge>
+            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+              Ambulance Fleets
+            </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               Automated handheld scanner pairing with zero internet latency offline token caching.
             </p>
           </div>
 
-          <div className="card-soft">
+          <div
+            className="card-soft"
+            style={{
+              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
+              border: '1px solid rgba(212, 175, 55, 0.22)',
+              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+            }}
+          >
             <StatusBadge variant="neutral" style={{ marginBottom: '0.75rem' }}>COORDINATION</StatusBadge>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Public Safety</h3>
+            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+              Public Safety
+            </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               Inter-agency coordination for missing persons and unidentified case registry broadcasts.
             </p>
@@ -59,7 +90,15 @@ export default function ContactPage() {
         </div>
 
         {/* Contact Form */}
-        <div className="card-soft" style={{ padding: '2.5rem' }}>
+        <div
+          className="card-soft"
+          style={{
+            padding: '2.5rem',
+            background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.85) 0%, rgba(10, 10, 14, 0.98) 100%)',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.08)',
+          }}
+        >
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
               <div

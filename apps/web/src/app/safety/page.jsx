@@ -45,9 +45,13 @@ export default function SafetyPage() {
       <div className="container">
         {/* Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow">CLINICAL TRIAGE INTEGRITY</div>
-          <h1>Clinical Safety &amp; Contraindications</h1>
-          <p className="section-subtitle">
+          <div className="section-eyebrow" style={{ color: 'var(--color-gold)', letterSpacing: '0.22em' }}>
+            ✦ CLINICAL TRIAGE SANCTITY ✦
+          </div>
+          <h1 className="font-royal text-gold-foil" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}>
+            Clinical Safety &amp; Contraindications
+          </h1>
+          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--text-secondary)' }}>
             Engineered in consultation with trauma surgeons and emergency physicians to prevent fatal adverse events during the critical golden resuscitation hour.
           </p>
         </div>
@@ -59,12 +63,17 @@ export default function SafetyPage() {
               key={idx}
               className="card-soft"
               style={{
+                background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
+                border: '1px solid rgba(212, 175, 55, 0.22)',
                 borderLeft: `4px solid ${cat.accent}`,
+                boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
                 <span style={{ fontSize: '1.5rem', color: cat.accent }} dangerouslySetInnerHTML={{ __html: cat.icon }} />
-                <h3 style={{ fontSize: '1.35rem' }}>{cat.title}</h3>
+                <h3 className="font-royal" style={{ fontSize: '1.35rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+                  {cat.title}
+                </h3>
               </div>
 
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -92,17 +101,18 @@ export default function SafetyPage() {
         {/* Life-Safety Protocol Box */}
         <div
           style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
+            background: 'linear-gradient(90deg, rgba(185, 28, 28, 0.2) 0%, rgba(20, 16, 10, 0.8) 100%)',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
             borderRadius: '16px',
             padding: '2rem',
             maxWidth: 960,
             margin: '0 auto',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.85rem' }}>
             <StatusBadge variant="emergency">STATUTORY EMERGENCY NOTICE</StatusBadge>
-            <h4 style={{ color: '#ffffff', margin: 0, fontSize: '1.1rem' }}>
+            <h4 className="font-royal" style={{ color: '#ffffff', margin: 0, fontSize: '1.1rem', letterSpacing: '0.02em' }}>
               Standard Operating Procedure for First Responders
             </h4>
           </div>

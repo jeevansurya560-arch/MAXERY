@@ -1,14 +1,15 @@
-<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="textGrad" x1="0" y1="24" x2="220" y2="24" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="85%" stop-color="#e2e8f0"/>
-      <stop offset="100%" stop-color="#94a3b8"/>
+    <linearGradient id="goldWordmark" x1="0" y1="24" x2="240" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="25%" stop-color="#fef08a"/>
+      <stop offset="60%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
   </defs>
-  <text x="4" y="34" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="28" font-weight="800" letter-spacing="4" fill="url(#textGrad)">
+  <text x="4" y="34" font-family="'Cinzel', 'Plus Jakarta Sans', serif" font-size="28" font-weight="800" letter-spacing="6" fill="url(#goldWordmark)">
     MAXERY
   </text>
-  <!-- Architectural Security Dot -->
-  <circle cx="198" cy="28" r="3.5" fill="#38bdf8"/>
+  <!-- Royal Diamond Seal -->
+  <polygon points="214,24 220,29 214,34 208,29" fill="url(#goldWordmark)"/>
 </svg>

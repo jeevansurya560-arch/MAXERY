@@ -48,9 +48,13 @@ export default function HowItWorksPage() {
       <div className="container">
         {/* Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow">LIFECYCLE OF AN EMERGENCY</div>
-          <h1>How the Aegis Protocol Operates</h1>
-          <p className="section-subtitle">
+          <div className="section-eyebrow" style={{ color: 'var(--color-gold)', letterSpacing: '0.22em' }}>
+            ✦ LIFECYCLE OF AN EMERGENCY ✦
+          </div>
+          <h1 className="font-royal text-gold-foil" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}>
+            How the Aegis Protocol Operates
+          </h1>
+          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--text-secondary)' }}>
             A resilient, zero-friction workflow engineered to survive connectivity dropouts, power outages, and high-stress trauma scenarios.
           </p>
         </div>
@@ -66,16 +70,19 @@ export default function HowItWorksPage() {
                 gridTemplateColumns: '80px 1fr',
                 gap: '2rem',
                 alignItems: 'flex-start',
+                background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
+                border: '1px solid rgba(212, 175, 55, 0.22)',
+                boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
               }}
             >
               <div
+                className="font-royal"
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '2rem',
+                  fontSize: '1.6rem',
                   fontWeight: 800,
-                  color: 'var(--color-cyan)',
-                  background: 'rgba(56, 189, 248, 0.08)',
-                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--color-gold)',
+                  background: 'rgba(212, 175, 55, 0.08)',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -88,9 +95,11 @@ export default function HowItWorksPage() {
 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  <StatusBadge variant={s.badge}>{s.subtitle}</StatusBadge>
+                  <StatusBadge variant="gold">{s.subtitle}</StatusBadge>
                 </div>
-                <h3 style={{ fontSize: '1.35rem', marginBottom: '0.75rem' }}>{s.title}</h3>
+                <h3 className="font-royal" style={{ fontSize: '1.35rem', marginBottom: '0.75rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+                  {s.title}
+                </h3>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
                   {s.description}
                 </p>
@@ -107,16 +116,18 @@ export default function HowItWorksPage() {
             margin: '0 auto',
             padding: '2.5rem',
             textAlign: 'center',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.1)',
           }}
         >
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>
+          <h3 className="font-royal text-gold-foil" style={{ fontSize: '1.65rem', marginBottom: '0.75rem' }}>
             Ready to test the live demonstration?
           </h3>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem', maxWidth: '52ch', margin: '0 auto 1.75rem auto' }}>
             Simulate an emergency scan on our live interactive simulator to see the exact triage card presented to field paramedics.
           </p>
-          <TactileButton href="/#scanner-simulator" variant="danger">
-            Launch Interactive Simulator &rarr;
+          <TactileButton href="/#scanner-simulator" variant="primary">
+            ✦ Launch Interactive Simulator &rarr;
           </TactileButton>
         </div>
       </div>

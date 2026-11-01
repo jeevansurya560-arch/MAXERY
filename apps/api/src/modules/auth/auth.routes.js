@@ -115,9 +115,9 @@ export default async function authRoutes(fastify) {
         data: {
           email: email.toLowerCase(),
           passwordHash,
+          name: fullName,
           firstName,
           lastName,
-          fullName,
           phone,
           role,
           isActive: true,
@@ -197,6 +197,33 @@ export default async function authRoutes(fastify) {
       }
 
       return reply.send(successResponse({ user }));
+    }
+  );
+
+  // POST /api/v1/auth/logout
+  fastify.post(
+    '/auth/logout',
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      // Invalidate active sessions in the database for this user
+      if (request.user?.id) {
+        await fastify.prisma.session.deleteMany({
+          where: { userId: request.user.id },
+        });
+
+        await fastify.recordAudit({
+          userId: request.user.id,
+          action: 'AUTH_LOGOUT',
+          entityType: 'User',
+          entityId: request.user.id,
+          ipAddress: request.ip,
+          userAgent: request.headers['user-agent'],
+        });
+      }
+
+      return reply.send(
+        successResponse({ message: 'Session successfully revoked' })
+      );
     }
   );
 }

@@ -1,16 +1,16 @@
 export default function CrisisRealitySection() {
   const failurePoints = [
     {
-      num: '01',
+      num: 'I',
       title: 'The 42-Minute Identity Void',
       subtitle: 'Trauma Without Identification',
       description:
         'When an unconscious individual arrives at the ER without physical ID or unlocked phone access, trauma protocols delay cross-matched transfusions, next-of-kin consent, and clinical history retrieval.',
       impact: 'Average 42 minutes lost during the golden resuscitation window.',
-      accent: 'var(--color-amber)',
+      accent: 'var(--color-gold)',
     },
     {
-      num: '02',
+      num: 'II',
       title: 'Lethal Drug Contraindications',
       subtitle: 'Blindspot In Resuscitation',
       description:
@@ -19,7 +19,7 @@ export default function CrisisRealitySection() {
       accent: 'var(--color-emergency)',
     },
     {
-      num: '03',
+      num: 'III',
       title: 'The Family Notification Blackout',
       subtitle: 'Isolation in Critical Hours',
       description:
@@ -30,18 +30,18 @@ export default function CrisisRealitySection() {
   ];
 
   return (
-    <section className="section-wrapper" style={{ background: 'rgba(9, 13, 22, 0.4)' }}>
+    <section className="section-wrapper" style={{ background: 'rgba(7, 10, 18, 0.6)' }}>
       <div className="container">
         {/* Section Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow">THE TRIAGE PARADOX</div>
-          <h2>Three Fatal Flaws in Conventional Emergency Response</h2>
+          <div className="section-eyebrow">✦ THE TRIAGE PARADOX ✦</div>
+          <h2>Three Fatal Voids in Conventional Emergency Care</h2>
           <p className="section-subtitle">
-            Modern trauma medicine possesses world-class surgical capabilities, but remains handcuffed by archaic, analog patient identification.
+            Modern clinical medicine possesses world-class surgical mastery, yet remains crippled by archaic, analog patient identification.
           </p>
         </div>
 
-        {/* 3-Column Failure Cards */}
+        {/* 3-Column Regal Failure Cards */}
         <div className="grid-3">
           {failurePoints.map((point) => (
             <div
@@ -51,6 +51,7 @@ export default function CrisisRealitySection() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
+                borderTop: `2px solid ${point.accent}`,
               }}
             >
               <div>
@@ -64,8 +65,8 @@ export default function CrisisRealitySection() {
                 >
                   <span
                     style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '1.75rem',
+                      fontFamily: 'var(--font-royal)',
+                      fontSize: '2rem',
                       fontWeight: 800,
                       color: point.accent,
                     }}
@@ -78,27 +79,27 @@ export default function CrisisRealitySection() {
                       fontSize: '0.75rem',
                       color: 'var(--text-muted)',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.1em',
                     }}
                   >
                     {point.subtitle}
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.85rem' }}>
+                <h3 style={{ fontSize: '1.35rem', marginBottom: '0.95rem' }}>
                   {point.title}
                 </h3>
 
-                <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
                   {point.description}
                 </p>
               </div>
 
               <div
                 style={{
-                  marginTop: '1.75rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid var(--border-subtle)',
+                  marginTop: '1.85rem',
+                  paddingTop: '1.1rem',
+                  borderTop: '1px solid var(--border-gold-subtle)',
                   fontSize: '0.8125rem',
                   color: point.accent,
                   fontWeight: 600,
@@ -107,7 +108,7 @@ export default function CrisisRealitySection() {
                   gap: '0.5rem',
                 }}
               >
-                <span>&bull;</span>
+                <span>✦</span>
                 <span>{point.impact}</span>
               </div>
             </div>

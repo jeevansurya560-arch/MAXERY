@@ -18,6 +18,7 @@ import contactsRoutes from './modules/emergency-contacts/contacts.routes.js';
 import patientsRoutes from './modules/patients/patients.routes.js';
 import privacyRoutes from './modules/privacy-requests/privacy.routes.js';
 import auditRoutes from './modules/audit/audit.routes.js';
+import { authHandler } from './infrastructure/auth/better-auth.js';
 
 export async function buildApp(opts = {}) {
   const app = Fastify({
@@ -88,7 +89,13 @@ export async function buildApp(opts = {}) {
     );
   });
 
-  // 4. Register Domain Route Modules under /api/v1
+  // 4. Mount Better Auth Lifecycle Endpoints (/api/auth/*)
+  app.all('/api/auth/*', (request, reply) => {
+    reply.hijack();
+    authHandler(request.raw, reply.raw);
+  });
+
+  // 5. Register Domain Route Modules under /api/v1
   await app.register(
     async (apiV1) => {
       await apiV1.register(healthRoutes);

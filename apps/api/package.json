@@ -19,6 +19,7 @@
     "@fastify/rate-limit": "^10.2.2",
     "@maxery/shared": "*",
     "@prisma/client": "^6.4.1",
+    "better-auth": "^1.7.14",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
     "socket.io": "^4.8.1",

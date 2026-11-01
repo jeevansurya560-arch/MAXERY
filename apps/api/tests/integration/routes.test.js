@@ -59,4 +59,26 @@ describe('Fastify REST API Integration Tests', () => {
     expect(body.success).toBe(false);
     expect(body.error.code).toBe('VALIDATION_ERROR');
   });
+
+  it('verifies Better Auth mounted endpoint responds correctly on Fastify', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/auth/ok',
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.payload)).toEqual({ ok: true });
+  });
+
+  it('rejects unauthenticated logout requests with 401 UNAUTHORIZED', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/logout',
+    });
+
+    expect(res.statusCode).toBe(401);
+    const body = JSON.parse(res.payload);
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('UNAUTHORIZED');
+  });
 });

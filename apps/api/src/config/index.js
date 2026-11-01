@@ -29,6 +29,13 @@ const configSchema = z.object({
   // Session settings
   SESSION_IDLE_TIMEOUT_SECONDS: z.coerce.number().default(1800),   // 30 min
   SESSION_ABSOLUTE_TIMEOUT_SECONDS: z.coerce.number().default(43200), // 12 hrs
+  // Neon direct connection (optional, for migrations)
+  DIRECT_URL: z.string().optional(),
+  // Better Auth & Google OAuth Configuration
+  BETTER_AUTH_SECRET: z.string().min(32).default('maxery_dev_session_secret_change_in_production_minimum_32_chars'),
+  BETTER_AUTH_URL: z.string().default('http://localhost:4000'),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 const parsed = configSchema.safeParse({
@@ -51,6 +58,11 @@ const parsed = configSchema.safeParse({
   REDIS_URL: process.env.REDIS_URL,
   SESSION_IDLE_TIMEOUT_SECONDS: process.env.SESSION_IDLE_TIMEOUT_SECONDS,
   SESSION_ABSOLUTE_TIMEOUT_SECONDS: process.env.SESSION_ABSOLUTE_TIMEOUT_SECONDS,
+  DIRECT_URL: process.env.DIRECT_URL || process.env.DATABASE_URL,
+  BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET || process.env.SESSION_SECRET,
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || 'http://localhost:4000',
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 });
 
 if (!parsed.success) {

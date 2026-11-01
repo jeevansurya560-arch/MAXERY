@@ -1,45 +1,58 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="shieldGrad" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+    <!-- Royal Aurum 24K Gold Gradient -->
+    <linearGradient id="royalGoldGrad" x1="8" y1="4" x2="64" y2="68" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="25%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#d4af37"/>
+      <stop offset="75%" stop-color="#b45309"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+
+    <!-- Deep Imperial Obsidian Gradient -->
+    <linearGradient id="imperialObsidian" x1="12" y1="6" x2="60" y2="66" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#090d16"/>
+      <stop offset="40%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#05080f"/>
     </linearGradient>
-    <linearGradient id="borderGrad" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#38bdf8"/>
-      <stop offset="50%" stop-color="#0284c7"/>
-      <stop offset="100%" stop-color="#0f172a"/>
+
+    <!-- Celestial Beacon Cyan Core -->
+    <linearGradient id="celestialCyan" x1="26" y1="20" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
-    <linearGradient id="crossGrad" x1="24" y1="20" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#38bdf8"/>
-      <stop offset="100%" stop-color="#0ea5e9"/>
-    </linearGradient>
-    <filter id="softGlow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+
+    <filter id="royalGlow" x="0" y="0" width="72" height="72" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
       <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
-  
-  <!-- Outer Aegis Shield Contour -->
-  <path d="M32 6L52 14V30C52 44.5 43.5 53.5 32 58C20.5 53.5 12 44.5 12 30V14L32 6Z" 
-        fill="url(#shieldGrad)" 
-        stroke="url(#borderGrad)" 
-        stroke-width="2" 
-        stroke-linejoin="round"/>
-        
-  <!-- Inner Architectural Facet -->
-  <path d="M32 10L48 16.5V29C48 41.5 41 49.5 32 53.5C23 49.5 16 41.5 16 29V16.5L32 10Z" 
-        stroke="rgba(255, 255, 255, 0.08)" 
-        stroke-width="1.5" 
-        fill="rgba(15, 23, 42, 0.4)"/>
 
-  <!-- Emergency Beacon Cross with Central Heart Pulse Notch -->
-  <g filter="url(#softGlow)">
-    <!-- Vertical Crossbar -->
-    <rect x="29" y="20" width="6" height="24" rx="2" fill="url(#crossGrad)"/>
+  <!-- Outer Heraldic Shield Facet (Gold Chiseled Rim) -->
+  <path d="M36 4L60 14V34C60 51 50 61.5 36 67C22 61.5 12 51 12 34V14L36 4Z" 
+        fill="url(#royalGoldGrad)"/>
+
+  <!-- Inner Recessed Obsidian Velvet Ground -->
+  <path d="M36 7.5L56.5 16V33.5C56.5 48.5 47.5 58 36 63C24.5 58 15.5 48.5 15.5 33.5V16L36 7.5Z" 
+        fill="url(#imperialObsidian)"/>
+
+  <!-- Guilloche Filigree Filaments (Fine Gold Tracing) -->
+  <path d="M36 12L52 19V32C52 44 45 52 36 56.5C27 52 20 44 20 32V19L36 12Z" 
+        stroke="url(#royalGoldGrad)" 
+        stroke-width="1" 
+        stroke-dasharray="2 3"
+        fill="none" 
+        opacity="0.6"/>
+
+  <!-- Sovereign Cross of Life & Emergency Beacon -->
+  <g filter="url(#royalGlow)">
+    <!-- Vertical Scepter -->
+    <rect x="33" y="21" width="6" height="28" rx="2" fill="url(#celestialCyan)"/>
     <!-- Horizontal Crossbar -->
-    <rect x="20" y="29" width="24" height="6" rx="2" fill="url(#crossGrad)"/>
-    <!-- Center Core Gem -->
-    <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+    <rect x="22" y="32" width="28" height="6" rx="2" fill="url(#celestialCyan)"/>
+    <!-- Gilded Core Diamond -->
+    <polygon points="36,30 41,35 36,40 31,35" fill="url(#royalGoldGrad)"/>
+    <circle cx="36" cy="35" r="2.2" fill="#ffffff"/>
   </g>
 </svg>

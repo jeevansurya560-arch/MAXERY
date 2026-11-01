@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ========================================================================
@@ -158,10 +159,13 @@ enum OutboxStatus {
 model User {
   id                 String    @id @default(uuid())
   email              String    @unique
-  // scrypt hash: format "hash:salt" (base64:base64). Never plaintext.
-  passwordHash       String
-  firstName          String
-  lastName           String
+  name               String?
+  emailVerified      Boolean   @default(false)
+  image              String?
+  // scrypt hash: format "hash:salt" (base64:base64). Optional for OAuth users.
+  passwordHash       String?
+  firstName          String?
+  lastName           String?
   phone              String?
   badgeNumber        String?
   role               UserRole  @default(RESPONDER)
@@ -171,6 +175,7 @@ model User {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
+  accounts                Account[]
   memberships             OrganisationMembership[]
   sessions                Session[]
   patientProfile          Patient?
@@ -234,28 +239,61 @@ model OrganisationMembership {
 }
 
 // ---------------------------------------------------------------------------
-// Session — server-managed opaque session tokens (replaces JWT approach)
-// The raw token is issued to the client as an HttpOnly cookie.
-// Only the SHA-256 hash is stored here.
+// Session — persistent session model (Better Auth + HttpOnly Cookie compatible)
 // ---------------------------------------------------------------------------
 model Session {
-  id           String   @id @default(uuid())
-  userId       String
-  // SHA-256(rawToken). rawToken is a 32-byte cryptographically random value,
-  // base64url encoded, delivered as an HttpOnly cookie. Never stored plaintext.
-  tokenHash    String   @unique
-  userAgent    String?
-  ipAddress    String?
-  isActive     Boolean  @default(true)
-  lastActiveAt DateTime @default(now())
-  expiresAt    DateTime // Absolute expiry — set at creation
-  createdAt    DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, isActive])
-  @@index([tokenHash])
+  @@index([userId])
+  @@index([token])
   @@index([expiresAt])
+}
+
+// ---------------------------------------------------------------------------
+// Account — OAuth identity provider records (Google, etc.)
+// ---------------------------------------------------------------------------
+model Account {
+  id                    String    @id @default(uuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Verification — tokens for email verification and OAuth state validation
+// ---------------------------------------------------------------------------
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
 }
 
 model Patient {
