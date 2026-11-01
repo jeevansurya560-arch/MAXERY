@@ -1,0 +1,45 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGrad" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="24" y1="20" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="softGlow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  
+  <!-- Outer Aegis Shield Contour -->
+  <path d="M32 6L52 14V30C52 44.5 43.5 53.5 32 58C20.5 53.5 12 44.5 12 30V14L32 6Z" 
+        fill="url(#shieldGrad)" 
+        stroke="url(#borderGrad)" 
+        stroke-width="2" 
+        stroke-linejoin="round"/>
+        
+  <!-- Inner Architectural Facet -->
+  <path d="M32 10L48 16.5V29C48 41.5 41 49.5 32 53.5C23 49.5 16 41.5 16 29V16.5L32 10Z" 
+        stroke="rgba(255, 255, 255, 0.08)" 
+        stroke-width="1.5" 
+        fill="rgba(15, 23, 42, 0.4)"/>
+
+  <!-- Emergency Beacon Cross with Central Heart Pulse Notch -->
+  <g filter="url(#softGlow)">
+    <!-- Vertical Crossbar -->
+    <rect x="29" y="20" width="6" height="24" rx="2" fill="url(#crossGrad)"/>
+    <!-- Horizontal Crossbar -->
+    <rect x="20" y="29" width="24" height="6" rx="2" fill="url(#crossGrad)"/>
+    <!-- Center Core Gem -->
+    <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+  </g>
+</svg>

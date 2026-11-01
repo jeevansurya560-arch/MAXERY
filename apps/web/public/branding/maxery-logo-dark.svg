@@ -1,0 +1,40 @@
+<svg width="280" height="56" viewBox="0 0 280 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGradDark" x1="6" y1="4" x2="46" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="crossGradDark" x1="20" y1="18" x2="32" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="textGradDark" x1="64" y1="28" x2="260" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="80%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Aegis Shield Mark -->
+  <g transform="translate(4, 4)">
+    <path d="M24 4L40 10V22C40 33 33.5 39.5 24 44C14.5 39.5 8 33 8 22V10L24 4Z" 
+          fill="url(#shieldGradDark)" 
+          stroke="#38bdf8" 
+          stroke-width="1.5" 
+          stroke-linejoin="round"/>
+    <path d="M24 7L36 12V21C36 30 31.5 35 24 39C16.5 35 12 30 12 21V12L24 7Z" 
+          stroke="rgba(255, 255, 255, 0.1)" 
+          stroke-width="1"/>
+    <!-- Cross -->
+    <rect x="22" y="15" width="4" height="18" rx="1.5" fill="url(#crossGradDark)"/>
+    <rect x="15" y="22" width="18" height="4" rx="1.5" fill="url(#crossGradDark)"/>
+    <circle cx="24" cy="24" r="2.2" fill="#ffffff"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="64" y="36" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="24" font-weight="800" letter-spacing="3.5" fill="url(#textGradDark)">
+    MAXERY
+  </text>
+  <circle cx="204" cy="31" r="3" fill="#38bdf8"/>
+</svg>
