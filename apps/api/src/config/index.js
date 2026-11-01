@@ -23,6 +23,7 @@ const configSchema = z.object({
       (s) => process.env.NODE_ENV !== 'production' || s !== 'maxery_dev_session_secret_change_in_production_minimum_32_chars',
       'SESSION_SECRET must be changed from the development default in production',
     ),
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
   REDIS_URL: z.string().optional(),
   // Session settings
@@ -39,6 +40,12 @@ const parsed = configSchema.safeParse({
     process.env.SESSION_SECRET ||
     (process.env.NODE_ENV !== 'production'
       ? 'maxery_dev_session_secret_change_in_production_minimum_32_chars'
+      : undefined),
+  JWT_SECRET:
+    process.env.JWT_SECRET ||
+    process.env.SESSION_SECRET ||
+    (process.env.NODE_ENV !== 'production'
+      ? 'maxery_dev_jwt_secret_key_minimum_32_characters_for_security_checks'
       : undefined),
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   REDIS_URL: process.env.REDIS_URL,
