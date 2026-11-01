@@ -52,9 +52,10 @@ export default function AuthModal({ isOpen, onClose }) {
           width: '100%',
           maxWidth: 440,
           padding: '2.5rem',
-          border: '1px solid rgba(212, 175, 55, 0.35)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 175, 55, 0.15)',
-          background: 'linear-gradient(180deg, rgba(22, 18, 12, 0.98) 0%, rgba(10, 10, 14, 0.99) 100%)',
+          border: '1px solid var(--border-subtle)',
+          boxShadow: 'var(--shadow-clinical-lg)',
+          background: 'var(--color-near-black)',
+          borderRadius: '10px',
           position: 'relative',
         }}
       >
@@ -69,7 +70,7 @@ export default function AuthModal({ isOpen, onClose }) {
             right: '1.25rem',
             background: 'none',
             border: 'none',
-            color: 'var(--color-gold-dim)',
+            color: 'var(--color-warm-ivory-muted)',
             fontSize: '1.5rem',
             cursor: 'pointer',
             lineHeight: 1,
@@ -81,13 +82,13 @@ export default function AuthModal({ isOpen, onClose }) {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <StatusBadge variant="gold" style={{ marginBottom: '0.75rem' }}>
-            ✦ IMPERIAL AUTHENTICATION ✦
+          <StatusBadge variant="gold" style={{ marginBottom: '0.75rem', background: 'rgba(23, 43, 64, 0.5)', borderColor: 'rgba(191, 160, 106, 0.3)' }}>
+            ✦ CLINICAL AUTHENTICATION ✦
           </StatusBadge>
-          <h2 id="auth-modal-title" className="font-royal text-gold-foil" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>
+          <h2 id="auth-modal-title" className="font-neoclassical text-gold-foil" style={{ fontSize: '1.65rem', marginBottom: '0.5rem', fontWeight: 700 }}>
             Sign In to MAXERY
           </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-warm-ivory-muted)' }}>
             Authenticate with verified Google credentials to manage your emergency profile or responder custody credentials.
           </p>
         </div>
@@ -96,9 +97,9 @@ export default function AuthModal({ isOpen, onClose }) {
         {error && (
           <div
             style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '8px',
+              background: 'rgba(220, 38, 38, 0.12)',
+              border: '1px solid rgba(220, 38, 38, 0.4)',
+              borderRadius: '6px',
               padding: '0.75rem 1rem',
               color: '#fca5a5',
               fontSize: '0.85rem',
@@ -121,16 +122,17 @@ export default function AuthModal({ isOpen, onClose }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.85rem',
-              background: '#ffffff',
-              color: '#1f2937',
-              border: '1px solid rgba(212, 175, 55, 0.4)',
-              borderRadius: '12px',
-              padding: '0.9rem 1.5rem',
-              fontSize: '0.95rem',
-              fontWeight: 600,
+              background: 'var(--color-warm-ivory)',
+              color: 'var(--color-near-black)',
+              border: '1px solid var(--color-muted-gold)',
+              borderRadius: '6px',
+              padding: '0.85rem 1.5rem',
+              fontSize: '0.9375rem',
+              fontFamily: 'var(--font-neoclassical)',
+              fontWeight: 700,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.7 : 1,
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
               transition: 'transform 0.15s ease, box-shadow 0.15s ease',
             }}
           >
@@ -162,15 +164,15 @@ export default function AuthModal({ isOpen, onClose }) {
           style={{
             marginTop: '2rem',
             paddingTop: '1.25rem',
-            borderTop: '1px solid rgba(212, 175, 55, 0.2)',
+            borderTop: '1px solid var(--border-hairline)',
             fontSize: '0.75rem',
-            color: 'var(--text-muted)',
+            color: 'var(--color-warm-ivory-muted)',
             textAlign: 'center',
             lineHeight: 1.5,
           }}
         >
           <p style={{ margin: 0 }}>
-            Protected by HttpOnly session tokens and DPDPA 2023 compliance. No passwords or tokens are stored in unencrypted browser storage.
+            Protected by HttpOnly session tokens and DPDPA 2023 compliance. No credentials or medical telemetry stored in unencrypted browser storage.
           </p>
         </div>
       </div>

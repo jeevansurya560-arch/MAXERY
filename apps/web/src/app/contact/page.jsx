@@ -24,32 +24,33 @@ export default function ContactPage() {
       <div className="container" style={{ maxWidth: 880 }}>
         {/* Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow" style={{ color: 'var(--color-gold)', letterSpacing: '0.22em' }}>
+          <div className="section-eyebrow" style={{ color: 'var(--color-muted-gold)', letterSpacing: '0.2em' }}>
             ✦ INSTITUTIONAL ALLIANCES ✦
           </div>
-          <h1 className="font-royal text-gold-foil" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}>
+          <h1 className="font-neoclassical text-gold-foil" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)', fontWeight: 700 }}>
             Responder &amp; Hospital Trauma Network
           </h1>
-          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--text-secondary)' }}>
+          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--color-warm-ivory-muted)' }}>
             Integrate your emergency department, ambulance fleet, or trauma network directly into the MAXERY real-time dispatch mesh.
           </p>
         </div>
 
         {/* Integration Pillars */}
-        <div className="grid-3" style={{ marginBottom: '3.5rem' }}>
+        <div className="grid-3" style={{ marginBottom: '3rem' }}>
           <div
             className="card-soft"
             style={{
-              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
-              border: '1px solid rgba(212, 175, 55, 0.22)',
-              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+              background: 'var(--color-near-black)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-clinical-sm)',
+              borderRadius: '8px',
             }}
           >
-            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem' }}>ER TRAUMA</StatusBadge>
-            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem', background: 'rgba(23, 43, 64, 0.4)', borderColor: 'rgba(191, 160, 106, 0.25)' }}>ER TRAUMA</StatusBadge>
+            <h3 className="font-neoclassical" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-warm-ivory)', letterSpacing: '0.02em', fontWeight: 600 }}>
               Hospital Integration
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-warm-ivory-muted)', lineHeight: 1.6 }}>
               Direct Socket.IO feeds for trauma bays to receive pre-arrival blood group alerts and contraindication warnings.
             </p>
           </div>
@@ -57,16 +58,17 @@ export default function ContactPage() {
           <div
             className="card-soft"
             style={{
-              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
-              border: '1px solid rgba(212, 175, 55, 0.22)',
-              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+              background: 'var(--color-near-black)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-clinical-sm)',
+              borderRadius: '8px',
             }}
           >
-            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem' }}>EMS FLEETS</StatusBadge>
-            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+            <StatusBadge variant="gold" style={{ marginBottom: '0.75rem', background: 'rgba(23, 43, 64, 0.4)', borderColor: 'rgba(191, 160, 106, 0.25)' }}>EMS FLEETS</StatusBadge>
+            <h3 className="font-neoclassical" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-warm-ivory)', letterSpacing: '0.02em', fontWeight: 600 }}>
               Ambulance Fleets
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-warm-ivory-muted)', lineHeight: 1.6 }}>
               Automated handheld scanner pairing with zero internet latency offline token caching.
             </p>
           </div>
@@ -74,16 +76,17 @@ export default function ContactPage() {
           <div
             className="card-soft"
             style={{
-              background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.8) 0%, rgba(10, 10, 14, 0.95) 100%)',
-              border: '1px solid rgba(212, 175, 55, 0.22)',
-              boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+              background: 'var(--color-near-black)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: 'var(--shadow-clinical-sm)',
+              borderRadius: '8px',
             }}
           >
-            <StatusBadge variant="neutral" style={{ marginBottom: '0.75rem' }}>COORDINATION</StatusBadge>
-            <h3 className="font-royal" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+            <StatusBadge variant="neutral" style={{ marginBottom: '0.75rem', background: 'rgba(23, 43, 64, 0.4)', borderColor: 'rgba(191, 160, 106, 0.25)' }}>COORDINATION</StatusBadge>
+            <h3 className="font-neoclassical" style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-warm-ivory)', letterSpacing: '0.02em', fontWeight: 600 }}>
               Public Safety
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-warm-ivory-muted)', lineHeight: 1.6 }}>
               Inter-agency coordination for missing persons and unidentified case registry broadcasts.
             </p>
           </div>
@@ -94,32 +97,33 @@ export default function ContactPage() {
           className="card-soft"
           style={{
             padding: '2.5rem',
-            background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.85) 0%, rgba(10, 10, 14, 0.98) 100%)',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.08)',
+            background: 'linear-gradient(180deg, #141414 0%, #0E0E0E 100%)',
+            border: '1px solid var(--border-subtle)',
+            boxShadow: 'var(--shadow-clinical-md)',
+            borderRadius: '10px',
           }}
         >
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
               <div
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 52,
+                  height: 52,
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  backgroundColor: 'rgba(5, 150, 105, 0.15)',
+                  border: '1px solid rgba(5, 150, 105, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 1.25rem auto',
-                  color: '#10b981',
-                  fontSize: '1.75rem',
+                  color: 'var(--color-verified)',
+                  fontSize: '1.5rem',
                 }}
               >
                 &#10003;
               </div>
-              <h3 style={{ fontSize: '1.35rem', marginBottom: '0.5rem' }}>Inquiry Registered</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '44ch', margin: '0 auto 1.5rem auto' }}>
+              <h3 className="font-neoclassical" style={{ fontSize: '1.35rem', marginBottom: '0.5rem', color: 'var(--color-warm-ivory)' }}>Inquiry Registered</h3>
+              <p style={{ color: 'var(--color-warm-ivory-muted)', maxWidth: '44ch', margin: '0 auto 1.5rem auto' }}>
                 Thank you for reaching out. Our emergency network integration liaison will contact your team within 24 business hours.
               </p>
               <TactileButton variant="secondary" onClick={() => setSubmitted(false)}>
@@ -128,19 +132,20 @@ export default function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.35rem' }}>Institutional Onboarding Inquiry</h3>
+              <h3 className="font-neoclassical text-gold-foil" style={{ fontSize: '1.35rem', fontWeight: 700 }}>Institutional Onboarding Inquiry</h3>
 
               <div className="grid-2">
                 <div>
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: 'var(--text-secondary)',
+                      color: 'var(--color-warm-ivory-muted)',
                       marginBottom: '0.4rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.08em',
+                      fontFamily: 'var(--font-neoclassical)',
                     }}
                   >
                     Contact Name
@@ -152,11 +157,11 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     style={{
                       width: '100%',
-                      background: 'rgba(9, 13, 22, 0.8)',
-                      border: '1px solid var(--border-medium)',
-                      borderRadius: '8px',
+                      background: 'rgba(20, 20, 20, 0.9)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '6px',
                       padding: '0.75rem 1rem',
-                      color: '#ffffff',
+                      color: 'var(--color-warm-ivory)',
                       outline: 'none',
                     }}
                   />
@@ -166,12 +171,13 @@ export default function ContactPage() {
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: 'var(--text-secondary)',
+                      color: 'var(--color-warm-ivory-muted)',
                       marginBottom: '0.4rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.08em',
+                      fontFamily: 'var(--font-neoclassical)',
                     }}
                   >
                     Hospital / Department
@@ -183,11 +189,11 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                     style={{
                       width: '100%',
-                      background: 'rgba(9, 13, 22, 0.8)',
-                      border: '1px solid var(--border-medium)',
-                      borderRadius: '8px',
+                      background: 'rgba(20, 20, 20, 0.9)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '6px',
                       padding: '0.75rem 1rem',
-                      color: '#ffffff',
+                      color: 'var(--color-warm-ivory)',
                       outline: 'none',
                     }}
                   />
@@ -199,12 +205,13 @@ export default function ContactPage() {
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: 'var(--text-secondary)',
+                      color: 'var(--color-warm-ivory-muted)',
                       marginBottom: '0.4rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.08em',
+                      fontFamily: 'var(--font-neoclassical)',
                     }}
                   >
                     Institutional Email
@@ -216,11 +223,11 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     style={{
                       width: '100%',
-                      background: 'rgba(9, 13, 22, 0.8)',
-                      border: '1px solid var(--border-medium)',
-                      borderRadius: '8px',
+                      background: 'rgba(20, 20, 20, 0.9)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '6px',
                       padding: '0.75rem 1rem',
-                      color: '#ffffff',
+                      color: 'var(--color-warm-ivory)',
                       outline: 'none',
                     }}
                   />
@@ -230,12 +237,13 @@ export default function ContactPage() {
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
-                      color: 'var(--text-secondary)',
+                      color: 'var(--color-warm-ivory-muted)',
                       marginBottom: '0.4rem',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.08em',
+                      fontFamily: 'var(--font-neoclassical)',
                     }}
                   >
                     Organization Type
@@ -245,11 +253,11 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     style={{
                       width: '100%',
-                      background: 'rgba(9, 13, 22, 0.8)',
-                      border: '1px solid var(--border-medium)',
-                      borderRadius: '8px',
+                      background: 'rgba(20, 20, 20, 0.9)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '6px',
                       padding: '0.75rem 1rem',
-                      color: '#ffffff',
+                      color: 'var(--color-warm-ivory)',
                       outline: 'none',
                     }}
                   >
@@ -265,12 +273,13 @@ export default function ContactPage() {
                 <label
                   style={{
                     display: 'block',
-                    fontSize: '0.8125rem',
+                    fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: 'var(--text-secondary)',
+                    color: 'var(--color-warm-ivory-muted)',
                     marginBottom: '0.4rem',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.08em',
+                    fontFamily: 'var(--font-neoclassical)',
                   }}
                 >
                   Technical or Clinical Objectives
@@ -283,11 +292,11 @@ export default function ContactPage() {
                   placeholder="Detail your expected monthly trauma volume, integration requirements, or field deployment timeline..."
                   style={{
                     width: '100%',
-                    background: 'rgba(9, 13, 22, 0.8)',
-                    border: '1px solid var(--border-medium)',
-                    borderRadius: '8px',
+                    background: 'rgba(20, 20, 20, 0.9)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '6px',
                     padding: '0.75rem 1rem',
-                    color: '#ffffff',
+                    color: 'var(--color-warm-ivory)',
                     outline: 'none',
                     fontFamily: 'inherit',
                   }}

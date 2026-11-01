@@ -1,15 +1,14 @@
 <svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="goldWordmark" x1="0" y1="24" x2="240" y2="24" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fffbeb"/>
-      <stop offset="25%" stop-color="#fef08a"/>
-      <stop offset="60%" stop-color="#d4af37"/>
-      <stop offset="100%" stop-color="#f59e0b"/>
+    <linearGradient id="ivoryWordmark" x1="0" y1="24" x2="240" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="60%" stop-color="#F5F1EA"/>
+      <stop offset="100%" stop-color="#E2DDD2"/>
     </linearGradient>
   </defs>
-  <text x="4" y="34" font-family="'Cinzel', 'Plus Jakarta Sans', serif" font-size="28" font-weight="800" letter-spacing="6" fill="url(#goldWordmark)">
+  <text x="4" y="34" font-family="'Cinzel', 'Plus Jakarta Sans', serif" font-size="28" font-weight="700" letter-spacing="6" fill="url(#ivoryWordmark)">
     MAXERY
   </text>
-  <!-- Royal Diamond Seal -->
-  <polygon points="214,24 220,29 214,34 208,29" fill="url(#goldWordmark)"/>
+  <!-- Muted Gold Diamond Seal -->
+  <polygon points="214,24 220,29 214,34 208,29" fill="#BFA06A"/>
 </svg>

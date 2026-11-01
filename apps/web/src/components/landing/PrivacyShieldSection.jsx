@@ -37,23 +37,23 @@ export default function PrivacyShieldSection() {
   ];
 
   return (
-    <section className="section-wrapper" style={{ background: 'linear-gradient(180deg, rgba(7, 6, 9, 0.95) 0%, rgba(14, 12, 8, 0.98) 100%)' }}>
+    <section className="section-wrapper" style={{ background: 'var(--color-near-black)' }}>
       <div className="container">
         {/* Section Header */}
         <div className="section-header centered">
-          <div className="section-eyebrow" style={{ color: 'var(--color-gold)', letterSpacing: '0.22em' }}>
-            ✦ SOVEREIGN CITIZEN CHARTER ✦
+          <div className="section-eyebrow">
+            ✦ STATUTORY DATA SOVEREIGNTY ✦
           </div>
-          <h2 className="font-royal text-gold-foil" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
-            The Imperial Privacy Codex
+          <h2 className="font-neoclassical text-gold-foil" style={{ fontSize: 'clamp(2rem, 3.2vw, 2.8rem)' }}>
+            The Statutory Privacy Codex
           </h2>
-          <p className="section-subtitle" style={{ maxWidth: 720, margin: '0 auto', color: 'var(--text-secondary)' }}>
+          <p className="section-subtitle" style={{ maxWidth: 720, margin: '1rem auto 0 auto', color: 'var(--color-warm-ivory-dim)' }}>
             MAXERY balances instantaneous life-saving field triage with strict statutory privacy protections under India&apos;s DPDPA 2023 and global health data sovereignty.
           </p>
         </div>
 
         {/* 4-Pillar Grid */}
-        <div className="grid-2" style={{ gap: '2rem' }}>
+        <div className="grid-2" style={{ gap: '1.5rem' }}>
           {securityPillars.map((pillar, idx) => (
             <div
               key={idx}
@@ -62,11 +62,11 @@ export default function PrivacyShieldSection() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                background: 'linear-gradient(180deg, rgba(20, 16, 10, 0.75) 0%, rgba(10, 10, 14, 0.95) 100%)',
-                border: '1px solid rgba(212, 175, 55, 0.22)',
+                background: 'var(--color-near-black-card)',
+                border: '1px solid var(--border-subtle)',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.8)',
+                boxShadow: 'var(--shadow-clinical-sm)',
               }}
             >
               {/* Subtle watermark Roman Numeral */}
@@ -75,10 +75,10 @@ export default function PrivacyShieldSection() {
                   position: 'absolute',
                   top: -8,
                   right: 14,
-                  fontFamily: 'var(--font-royal)',
+                  fontFamily: 'var(--font-neoclassical)',
                   fontSize: '4rem',
-                  fontWeight: 900,
-                  color: 'rgba(212, 175, 55, 0.05)',
+                  fontWeight: 700,
+                  color: 'rgba(245, 241, 234, 0.03)',
                   pointerEvents: 'none',
                   lineHeight: 1,
                 }}
@@ -98,9 +98,9 @@ export default function PrivacyShieldSection() {
                   <StatusBadge variant={pillar.badge}>{pillar.subtitle}</StatusBadge>
                   <span
                     style={{
-                      fontFamily: 'var(--font-royal)',
+                      fontFamily: 'var(--font-neoclassical)',
                       fontSize: '0.8125rem',
-                      color: 'var(--color-gold-light)',
+                      color: 'var(--color-muted-gold)',
                       letterSpacing: '0.08em',
                       fontWeight: 700,
                     }}
@@ -109,11 +109,11 @@ export default function PrivacyShieldSection() {
                   </span>
                 </div>
 
-                <h3 className="font-royal" style={{ fontSize: '1.35rem', marginBottom: '0.75rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+                <h3 className="font-neoclassical" style={{ fontSize: '1.35rem', marginBottom: '0.75rem', color: 'var(--color-warm-ivory)', letterSpacing: '0.02em' }}>
                   {pillar.title}
                 </h3>
 
-                <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
+                <p style={{ fontSize: '0.9375rem', color: 'var(--color-warm-ivory-dim)', lineHeight: 1.65 }}>
                   {pillar.description}
                 </p>
               </div>
@@ -122,17 +122,17 @@ export default function PrivacyShieldSection() {
                 style={{
                   marginTop: '1.5rem',
                   paddingTop: '0.85rem',
-                  borderTop: '1px solid rgba(212, 175, 55, 0.15)',
+                  borderTop: '1px solid var(--border-hairline)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
                   fontSize: '0.8125rem',
-                  color: 'var(--color-gold-light)',
-                  fontFamily: 'var(--font-royal)',
+                  color: 'var(--color-warm-ivory-muted)',
+                  fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.04em',
                 }}
               >
-                <span style={{ color: 'var(--color-gold)' }}>✦</span>
+                <span style={{ color: 'var(--color-verified)' }}>✓</span>
                 <span>Statutory Sovereign Compliance Guaranteed</span>
               </div>
             </div>

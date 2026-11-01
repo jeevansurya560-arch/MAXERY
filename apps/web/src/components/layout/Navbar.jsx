@@ -28,13 +28,13 @@ export default function Navbar() {
           top: 0,
           zIndex: 50,
           height: 'var(--navbar-height)',
-          background: 'rgba(7, 6, 9, 0.9)',
+          background: 'rgba(14, 14, 14, 0.92)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.22)',
+          borderBottom: '1px solid var(--border-hairline)',
           display: 'flex',
           alignItems: 'center',
-          boxShadow: '0 4px 25px rgba(0, 0, 0, 0.7)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.8)',
         }}
       >
         <div
@@ -67,26 +67,26 @@ export default function Navbar() {
               />
             </div>
             <span
-              className="font-royal text-gold-foil"
+              className="font-neoclassical text-gold-foil"
               style={{
-                fontSize: '1.3rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
               }}
             >
               MAXERY
             </span>
             <span
-              className="font-royal"
+              className="font-neoclassical"
               style={{
-                fontSize: '0.6875rem',
-                color: 'var(--color-gold-light)',
-                background: 'rgba(212, 175, 55, 0.12)',
-                padding: '0.18rem 0.5rem',
-                borderRadius: '4px',
-                border: '1px solid rgba(212, 175, 55, 0.35)',
+                fontSize: '0.625rem',
+                color: 'var(--color-muted-gold)',
+                background: 'rgba(23, 43, 64, 0.4)',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '3px',
+                border: '1px solid rgba(191, 160, 106, 0.3)',
                 fontWeight: 700,
-                letterSpacing: '0.06em',
+                letterSpacing: '0.1em',
               }}
             >
               AEGIS
@@ -106,42 +106,46 @@ export default function Navbar() {
             <Link
               href="/how-it-works"
               style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
+                color: 'var(--color-warm-ivory-muted)',
+                fontSize: '0.875rem',
                 fontWeight: 500,
+                letterSpacing: '0.02em',
                 transition: 'color 0.2s',
               }}
             >
-              How It Works
+              Architecture
             </Link>
             <Link
               href="/safety"
               style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
+                color: 'var(--color-warm-ivory-muted)',
+                fontSize: '0.875rem',
                 fontWeight: 500,
+                letterSpacing: '0.02em',
                 transition: 'color 0.2s',
               }}
             >
-              Clinical Safety
+              Clinical Protocol
             </Link>
             <Link
               href="/privacy"
               style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
+                color: 'var(--color-warm-ivory-muted)',
+                fontSize: '0.875rem',
                 fontWeight: 500,
+                letterSpacing: '0.02em',
                 transition: 'color 0.2s',
               }}
             >
-              Privacy &amp; DPDPA
+              Statutory Privacy
             </Link>
             <Link
               href="/#dispatcher-feed"
               style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
+                color: 'var(--color-warm-ivory-muted)',
+                fontSize: '0.875rem',
                 fontWeight: 500,
+                letterSpacing: '0.02em',
                 transition: 'color 0.2s',
               }}
             >
@@ -157,12 +161,12 @@ export default function Navbar() {
                 <span
                   style={{
                     fontSize: '0.8125rem',
-                    color: 'var(--color-gold-light)',
-                    fontFamily: 'var(--font-royal)',
-                    background: 'rgba(212, 175, 55, 0.1)',
+                    color: 'var(--color-muted-gold)',
+                    fontFamily: 'var(--font-neoclassical)',
+                    background: 'rgba(23, 43, 64, 0.4)',
                     padding: '0.35rem 0.75rem',
-                    borderRadius: '6px',
-                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(191, 160, 106, 0.3)',
                     fontWeight: 600,
                   }}
                 >
@@ -180,9 +184,9 @@ export default function Navbar() {
               <TactileButton
                 variant="secondary"
                 onClick={() => setAuthModalOpen(true)}
-                style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem', borderColor: 'rgba(212, 175, 55, 0.4)' }}
+                style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem' }}
               >
-                ✦ Sign In
+                Sign In
               </TactileButton>
             )}
 
@@ -196,8 +200,7 @@ export default function Navbar() {
                   width: 7,
                   height: 7,
                   borderRadius: '50%',
-                  backgroundColor: '#050505',
-                  boxShadow: '0 0 6px #050505',
+                  backgroundColor: 'var(--color-near-black)',
                   display: 'inline-block',
                 }}
               />
@@ -219,9 +222,10 @@ export default function Navbar() {
                 width: 36,
                 height: 36,
                 padding: 6,
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderRadius: 6,
                 border: '1px solid var(--border-subtle)',
+                cursor: 'pointer',
               }}
             >
               <span
@@ -229,7 +233,7 @@ export default function Navbar() {
                   display: 'block',
                   width: '100%',
                   height: 2,
-                  backgroundColor: 'var(--text-primary)',
+                  backgroundColor: 'var(--color-warm-ivory)',
                   borderRadius: 2,
                 }}
               />
@@ -238,16 +242,16 @@ export default function Navbar() {
                   display: 'block',
                   width: '100%',
                   height: 2,
-                  backgroundColor: 'var(--text-primary)',
+                  backgroundColor: 'var(--color-warm-ivory)',
                   borderRadius: 2,
                 }}
               />
               <span
                 style={{
                   display: 'block',
-                  width: '70%',
+                  width: '65%',
                   height: 2,
-                  backgroundColor: 'var(--color-cyan)',
+                  backgroundColor: 'var(--color-muted-gold)',
                   borderRadius: 2,
                 }}
               />

@@ -8,24 +8,25 @@ export default function HeroSection() {
   return (
     <section
       style={{
-        paddingTop: '3.75rem',
-        paddingBottom: '5rem',
+        paddingTop: '4.5rem',
+        paddingBottom: '5.5rem',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
       <div className="container">
-        <div className="hero-grid-layout">
-          {/* Left Column: Mission & Imperial CTAs */}
+        <div className="hero-grid-layout" style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '3.5rem', alignItems: 'center' }}>
+          {/* Left Column: Mission & Clinical Elegance CTAs */}
           <div>
             <div className="section-eyebrow">
-              ✦ IMPERIAL AEGIS PROTOCOL ✦
+              ✦ CLINICAL AEGIS PROTOCOL ✦
             </div>
 
             <h1
               style={{
                 marginBottom: '1.35rem',
-                color: 'var(--text-primary)',
+                color: 'var(--color-warm-ivory)',
+                letterSpacing: '0.04em',
               }}
             >
               When Every Second <span className="text-gold-foil">Decides a Life.</span>
@@ -33,11 +34,11 @@ export default function HeroSection() {
 
             <p
               style={{
-                fontSize: '1.18rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '2.25rem',
+                fontSize: '1.125rem',
+                color: 'var(--color-warm-ivory-dim)',
+                marginBottom: '2.5rem',
                 maxWidth: '52ch',
-                lineHeight: 1.65,
+                lineHeight: 1.7,
               }}
             >
               Sovereign zero-PII emergency identification, instant contraindication defense, and trusted-contact coordination for responders and trauma centers.
@@ -50,13 +51,13 @@ export default function HeroSection() {
                 gap: '1.25rem',
                 alignItems: 'center',
                 flexWrap: 'wrap',
-                marginBottom: '3rem',
+                marginBottom: '3.25rem',
               }}
             >
               <TactileButton
                 href="#scanner-simulator"
                 variant="primary"
-                style={{ padding: '1rem 2.25rem', fontSize: '1rem' }}
+                style={{ padding: '0.9rem 2.2rem', fontSize: '0.95rem' }}
               >
                 <span>✦</span>
                 Simulate Emergency Scan
@@ -65,9 +66,9 @@ export default function HeroSection() {
               <TactileButton
                 href="/how-it-works"
                 variant="secondary"
-                style={{ padding: '1rem 1.85rem', fontSize: '1rem' }}
+                style={{ padding: '0.9rem 1.85rem', fontSize: '0.95rem' }}
               >
-                Sovereign Protocol &rarr;
+                Clinical Protocol &rarr;
               </TactileButton>
             </div>
 
@@ -76,70 +77,73 @@ export default function HeroSection() {
               style={{
                 display: 'flex',
                 gap: '2.5rem',
-                paddingTop: '1.75rem',
-                borderTop: '1px solid var(--border-gold-subtle)',
+                paddingTop: '2rem',
+                borderTop: '1px solid var(--border-subtle)',
                 flexWrap: 'wrap',
               }}
             >
               <div>
                 <div
+                  className="font-neoclassical"
                   style={{
-                    fontFamily: 'var(--font-royal)',
-                    fontSize: '1.5rem',
-                    fontWeight: 800,
-                    color: 'var(--color-gold-light)',
+                    fontSize: '1.6rem',
+                    fontWeight: 700,
+                    color: 'var(--color-warm-ivory)',
                   }}
                 >
                   &lt; 3.2s
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-warm-ivory-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.2rem' }}>
                   Golden Hour Lookup
                 </div>
               </div>
 
               <div>
                 <div
+                  className="font-neoclassical"
                   style={{
-                    fontFamily: 'var(--font-royal)',
-                    fontSize: '1.5rem',
-                    fontWeight: 800,
+                    fontSize: '1.6rem',
+                    fontWeight: 700,
                     color: 'var(--color-emergency)',
                   }}
                 >
                   ZERO PII
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-warm-ivory-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.2rem' }}>
                   Opaque Tokenization
                 </div>
               </div>
 
               <div>
                 <div
+                  className="font-neoclassical"
                   style={{
-                    fontFamily: 'var(--font-royal)',
-                    fontSize: '1.5rem',
-                    fontWeight: 800,
-                    color: 'var(--color-gold)',
+                    fontSize: '1.6rem',
+                    fontWeight: 700,
+                    color: 'var(--color-muted-gold)',
                   }}
                 >
                   DPDPA 2023
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-warm-ivory-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.2rem' }}>
                   Statutory Sovereignty
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: The Imperial Aegis Sovereign Card Preview */}
+          {/* Right Column: The Sovereign Pass (Patient Interface & Japandi Bento Card) */}
           <div style={{ position: 'relative' }}>
             <div
-              className="card-holographic"
+              className="card-soft"
               style={{
                 padding: '2.25rem',
-                maxWidth: 460,
+                maxWidth: 470,
                 marginLeft: 'auto',
                 marginRight: 'auto',
+                background: 'linear-gradient(180deg, #131E2A 0%, #0E0E0E 100%)',
+                border: '1px solid rgba(191, 160, 106, 0.3)',
+                boxShadow: 'var(--shadow-clinical-lg)',
               }}
             >
               {/* Card Header */}
@@ -149,7 +153,7 @@ export default function HeroSection() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginBottom: '1.75rem',
-                  borderBottom: '1px solid var(--border-gold-subtle)',
+                  borderBottom: '1px solid rgba(245, 241, 234, 0.1)',
                   paddingBottom: '1rem',
                 }}
               >
@@ -162,17 +166,17 @@ export default function HeroSection() {
                   />
                   <div>
                     <div
+                      className="font-neoclassical"
                       style={{
-                        fontFamily: 'var(--font-royal)',
-                        fontSize: '0.95rem',
-                        fontWeight: 800,
+                        fontSize: '1rem',
+                        fontWeight: 700,
                         letterSpacing: '0.08em',
-                        color: 'var(--color-gold-light)',
+                        color: 'var(--color-warm-ivory)',
                       }}
                     >
                       MAXERY AEGIS
                     </div>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--color-muted-gold)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
                       SOVEREIGN TRAUMA PASS
                     </span>
                   </div>
@@ -189,35 +193,36 @@ export default function HeroSection() {
                   marginBottom: '1.65rem',
                 }}
               >
-                {/* Gilded QR Container */}
+                {/* QR Container */}
                 <div
                   style={{
-                    background: '#ffffff',
+                    background: '#FFFFFF',
                     padding: '8px',
-                    borderRadius: '12px',
-                    border: '2px solid var(--color-gold)',
-                    width: 100,
-                    height: 100,
+                    borderRadius: '8px',
+                    border: '1px solid rgba(191, 160, 106, 0.5)',
+                    width: 96,
+                    height: 96,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 6px 18px rgba(212, 175, 55, 0.35)',
+                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.5)',
                     flexShrink: 0,
                   }}
                 >
-                  <svg width="84" height="84" viewBox="0 0 24 24" fill="#070a12">
+                  <svg width="80" height="80" viewBox="0 0 24 24" fill="#0E0E0E">
                     <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm12-2h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v4h-4v-2h2v-2zm-4 2h2v2h-2v-2zm-6-2h2v2h-2v-2zm0 4h2v2h-2v-2z" />
                   </svg>
                 </div>
 
-                {/* Vital Statistics */}
+                {/* Vital Statistics (Bento Compartment) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      color: 'var(--color-gold)',
-                      letterSpacing: '0.08em',
+                      fontSize: '0.72rem',
+                      color: 'var(--color-muted-gold)',
+                      letterSpacing: '0.06em',
+                      fontWeight: 600,
                     }}
                   >
                     TOKEN: MX-QR-7F89B2A4
@@ -226,27 +231,27 @@ export default function HeroSection() {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
+                      gap: '0.65rem',
                     }}
                   >
                     <span
+                      className="font-neoclassical"
                       style={{
-                        fontFamily: 'var(--font-royal)',
                         fontSize: '1.65rem',
-                        fontWeight: 800,
-                        color: 'var(--color-gold-light)',
+                        fontWeight: 700,
+                        color: 'var(--color-warm-ivory)',
                       }}
                     >
                       O-Negative
                     </span>
                     <span
                       style={{
-                        fontSize: '0.7rem',
-                        color: '#fef08a',
-                        background: 'rgba(212, 175, 55, 0.15)',
-                        border: '1px solid rgba(212, 175, 55, 0.35)',
-                        padding: '2px 8px',
-                        borderRadius: '6px',
+                        fontSize: '0.68rem',
+                        color: 'var(--color-muted-gold-light)',
+                        background: 'rgba(191, 160, 106, 0.12)',
+                        border: '1px solid rgba(191, 160, 106, 0.35)',
+                        padding: '2px 7px',
+                        borderRadius: '4px',
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 600,
                       }}
@@ -254,31 +259,30 @@ export default function HeroSection() {
                       UNIVERSAL
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <span style={{ fontSize: '0.875rem', color: 'var(--color-warm-ivory-dim)' }}>
                     Vikram S. &bull; Age 34
                   </span>
                 </div>
               </div>
 
-              {/* High-Acuity Ruby Emergency Alert Card */}
+              {/* High-Acuity Emergency Alert Card (Utilitarian Warning) */}
               <div
                 style={{
-                  background: 'rgba(239, 68, 68, 0.12)',
-                  border: '1px solid rgba(239, 68, 68, 0.45)',
-                  borderRadius: '12px',
+                  background: 'var(--color-emergency-bg)',
+                  border: '1px solid var(--color-emergency-border)',
+                  borderRadius: '8px',
                   padding: '1rem 1.15rem',
                   marginBottom: '1.25rem',
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: '0.85rem',
-                  boxShadow: 'var(--shadow-ruby-halo)',
                 }}
               >
                 <span
                   style={{
-                    color: '#ef4444',
+                    color: 'var(--color-emergency)',
                     fontWeight: 800,
-                    fontSize: '1.25rem',
+                    fontSize: '1.15rem',
                     lineHeight: 1,
                   }}
                 >
@@ -287,17 +291,17 @@ export default function HeroSection() {
                 <div>
                   <div
                     style={{
-                      fontSize: '0.8125rem',
+                      fontSize: '0.75rem',
                       fontWeight: 700,
-                      color: '#fca5a5',
-                      letterSpacing: '0.08em',
+                      color: '#FCA5A5',
+                      letterSpacing: '0.06em',
                       textTransform: 'uppercase',
                       fontFamily: 'var(--font-mono)',
                     }}
                   >
                     CRITICAL LIFE-SAFETY CONTRAINDICATION
                   </div>
-                  <div style={{ fontSize: '0.8125rem', color: '#fecaca', marginTop: 3 }}>
+                  <div style={{ fontSize: '0.8125rem', color: '#FECACA', marginTop: 3 }}>
                     Severe Penicillin Anaphylaxis &bull; Type-1 Insulin Dependent
                   </div>
                 </div>
@@ -310,13 +314,13 @@ export default function HeroSection() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
+                  color: 'var(--color-warm-ivory-muted)',
                   fontFamily: 'var(--font-mono)',
-                  borderTop: '1px solid var(--border-gold-subtle)',
+                  borderTop: '1px solid var(--border-hairline)',
                   paddingTop: '0.95rem',
                 }}
               >
-                <span style={{ color: 'var(--color-gold)' }}>CUSTODY: ARV-7402</span>
+                <span style={{ color: 'var(--color-muted-gold)' }}>CUSTODY: ARV-7402</span>
                 <span style={{ color: 'var(--color-verified)' }}>GEOHASH ACTIVE</span>
               </div>
             </div>
