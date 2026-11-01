@@ -457,9 +457,46 @@ a {
   background-color: var(--color-warm-ivory-muted);
 }
 
-/* Guilloche Subtle Background Watermark */
+/* Guilloche Background Pattern & Canvas Depth */
 .guilloche-bg {
-  background-color: var(--color-near-black);
+  background-color: var(--color-near-black) !important;
+  background-image: 
+    radial-gradient(rgba(191, 160, 106, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(23, 43, 64, 0.28) 0%, transparent 70%);
+  background-size: 24px 24px, 100% 100%;
+}
+
+/* Responsive Navigation Utilities */
+.desktop-nav {
+  display: none !important;
+}
+
+.mobile-toggle {
+  display: flex !important;
+}
+
+@media (min-width: 860px) {
+  .desktop-nav {
+    display: flex !important;
+  }
+  .mobile-toggle {
+    display: none !important;
+  }
+}
+
+/* Responsive Hero Grid */
+.hero-grid-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+@media (max-width: 920px) {
+  .hero-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
 }
 
 /* Spinner Animation & Utilities */
@@ -469,4 +506,14 @@ a {
 
 .spin-animate {
   animation: spin 1s linear infinite;
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
